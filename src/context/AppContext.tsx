@@ -167,8 +167,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setNotificationModalTarget(target || {});
   }, []);
 
-  // Events state: populated with mockData by default, dynamically refreshed from Supabase if configured
-  const [events, setEvents] = useState<EventItem[]>(EVENTS_DATA);
+  // Events state: populated with mockData + custom events, dynamically refreshed from Supabase if configured
+  const [events, setEvents] = useState<EventItem[]>(() => {
+    try {
+      const rawCustom = localStorage.getItem('pulse_custom_events');
+      if (rawCustom) {
+        const customEvents: EventItem[] = JSON.parse(rawCustom);
+        return [...customEvents, ...EVENTS_DATA];
+      }
+    } catch {}
+    return EVENTS_DATA;
+  });
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     lastSyncedAt: null,
     status: isSupabaseConfigured() ? 'active' : 'local_fallback',
@@ -212,7 +221,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             return { ...e, city: citySlug };
           }).filter(e => !catalogIds.has(e.id));
 
-          return [...updatedCatalog, ...newLiveEvents];
+          let customEvents: EventItem[] = [];
+          try {
+            const rawCustom = localStorage.getItem('pulse_custom_events');
+            if (rawCustom) customEvents = JSON.parse(rawCustom);
+          } catch {}
+
+          const allMerged = [...updatedCatalog, ...newLiveEvents];
+          const existingIds = new Set(allMerged.map(e => e.id));
+          customEvents.forEach(ce => {
+            if (!existingIds.has(ce.id)) {
+              allMerged.unshift(ce);
+            }
+          });
+
+          return allMerged;
         });
       }
       const status = await fetchSyncStatus();

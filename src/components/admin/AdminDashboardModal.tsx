@@ -44,14 +44,25 @@ import {
   KeyRound,
   Settings,
   Globe,
-  Check
+  Check,
+  Radio,
+  PlusCircle,
+  Link as LinkIcon
 } from 'lucide-react';
 import { CITIES, EVENTS_DATA } from '../../data/mockData';
 import { getGeminiApiKey, saveGeminiApiKey } from '../../lib/aiAgent';
 
 export const AdminDashboardModal: React.FC = () => {
-  const { isAdminModalOpen, setIsAdminModalOpen, currentUser, setNotifyToast, events } = useApp();
-  const [activeTab, setActiveTab] = useState<'users' | 'email_queue'>('users');
+  const { 
+    isAdminModalOpen, 
+    setIsAdminModalOpen, 
+    currentUser, 
+    setNotifyToast, 
+    events, 
+    refreshLiveEvents, 
+    syncStatus 
+  } = useApp();
+  const [activeTab, setActiveTab] = useState<'users' | 'email_queue' | 'ingestion'>('users');
   const [emailSubTab, setEmailSubTab] = useState<'queue' | 'subscribers' | 'direct' | 'settings'>('queue');
   
   // User directory state
@@ -95,6 +106,120 @@ export const AdminDashboardModal: React.FC = () => {
     } else {
       setNotifyToast(`⚠️ Test email failed: ${res.error || 'Network error'}`);
     }
+  };
+
+  // Quick URL Importer & Ingestion state
+  const [importUrl, setImportUrl] = useState('');
+  const [importTitle, setImportTitle] = useState('');
+  const [importOrganizer, setImportOrganizer] = useState('');
+  const [importDate, setImportDate] = useState('');
+  const [importTime, setImportTime] = useState('');
+  const [importVenue, setImportVenue] = useState('');
+  const [importCity, setImportCity] = useState('Delhi NCR');
+  const [importCategory, setImportCategory] = useState('AI / ML');
+  const [importMode, setImportMode] = useState<'offline' | 'online' | 'hybrid'>('offline');
+  const [isSyncingLive, setIsSyncingLive] = useState(false);
+  const [isSubmittingImport, setIsSubmittingImport] = useState(false);
+
+  const handleUrlBlur = (url: string) => {
+    const trimmed = url.trim();
+    if (!trimmed) return;
+    
+    // Heuristic detection based on domain
+    if (trimmed.includes('linkedin.com') && !importOrganizer) {
+      setImportOrganizer('LinkedIn Professional Network');
+    } else if (trimmed.includes('facebook.com') && !importOrganizer) {
+      setImportOrganizer('Facebook Community Group');
+    } else if (trimmed.includes('lu.ma') && !importOrganizer) {
+      setImportOrganizer('Luma Tech Community');
+    } else if (trimmed.includes('atlassian') && !importOrganizer) {
+      setImportOrganizer('Atlassian Community Chapter');
+    } else if ((trimmed.includes('producttank') || trimmed.includes('mindtheproduct')) && !importOrganizer) {
+      setImportOrganizer('ProductTank Community');
+    }
+
+    if (!importTitle) {
+      try {
+        const pathSegments = new URL(trimmed).pathname.split('/').filter(Boolean);
+        const last = pathSegments[pathSegments.length - 1];
+        if (last && last.length > 3) {
+          const formatted = decodeURIComponent(last).replace(/[-_]+/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          setImportTitle(formatted);
+        }
+      } catch {}
+    }
+  };
+
+  const handleManualSyncTrigger = async () => {
+    setIsSyncingLive(true);
+    await refreshLiveEvents();
+    setIsSyncingLive(false);
+    setNotifyToast('⚡ Live Event Catalog refreshed from Supabase!');
+  };
+
+  const handlePublishCustomEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!importTitle.trim() || !importDate.trim()) {
+      setNotifyToast('⚠️ Please enter at least an Event Title and Date.');
+      return;
+    }
+
+    setIsSubmittingImport(true);
+    const normCity = importCity.toLowerCase().replace(/[\s-_]+/g, '');
+    const citySlug = 
+      normCity.includes('delhi') ? 'delhi-ncr' :
+      normCity.includes('bengaluru') || normCity.includes('bangalore') ? 'bengaluru' :
+      normCity.includes('francisco') || normCity.includes('sf') ? 'san-francisco' :
+      normCity.includes('mumbai') ? 'mumbai' :
+      normCity.includes('london') ? 'london' :
+      'remote';
+
+    const newEvt = {
+      id: `custom-evt-${Date.now()}`,
+      title: importTitle.trim(),
+      tagline: `Curated community event by ${importOrganizer || 'Community'}`,
+      description: `${importTitle.trim()} organized by ${importOrganizer || 'Community Network'}. RSVP directly via ${importUrl || 'registration link'}.`,
+      date: importDate.trim(),
+      time: importTime.trim() || '05:00 PM - 08:00 PM',
+      isoDate: new Date().toISOString(),
+      location: importVenue.trim() || importCity,
+      city: citySlug,
+      venue: importVenue.trim() || importCity,
+      venueUrl: (importUrl.startsWith('http') && !importUrl.includes('linkedin') && !importUrl.includes('facebook')) ? importUrl : undefined,
+      price: 'Free',
+      mode: importMode,
+      categories: [importCategory],
+      rsvpUrl: importUrl.trim() || 'https://pulsemeethack2skill.netlify.app',
+      sourcePlatform: importUrl.includes('linkedin') ? 'LinkedIn' : importUrl.includes('facebook') ? 'Facebook' : importUrl.includes('lu.ma') ? 'Luma' : 'Community',
+      organizer: {
+        id: `org-${Date.now()}`,
+        name: importOrganizer.trim() || 'Community Organizer',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60',
+        verified: true,
+        cadenceBadge: 'Active Member',
+        memberCount: 250
+      },
+      featured: true,
+      speakers: []
+    };
+
+    try {
+      const stored = localStorage.getItem('pulse_custom_events');
+      const parsed = stored ? JSON.parse(stored) : [];
+      parsed.unshift(newEvt);
+      localStorage.setItem('pulse_custom_events', JSON.stringify(parsed));
+    } catch {}
+
+    await refreshLiveEvents();
+    setIsSubmittingImport(false);
+    setNotifyToast(`🎉 "${newEvt.title}" added to live feed!`);
+
+    setImportUrl('');
+    setImportTitle('');
+    setImportOrganizer('');
+    setImportDate('');
+    setImportTime('');
+    setImportVenue('');
   };
 
   useEffect(() => {
@@ -298,6 +423,19 @@ export const AdminDashboardModal: React.FC = () => {
 
           <button
             type="button"
+            onClick={() => setActiveTab('ingestion')}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+              activeTab === 'ingestion'
+                ? 'bg-purple-600 text-white shadow-2xs'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200/80'
+            }`}
+          >
+            <Radio className="w-3.5 h-3.5" />
+            <span>Feed Ingestion & Scheduler</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleRefresh}
             className="ml-auto p-2 rounded-xl border border-zinc-200 hover:bg-zinc-100 text-zinc-600 transition-colors"
             title="Refresh All"
@@ -480,7 +618,7 @@ export const AdminDashboardModal: React.FC = () => {
               </table>
             </div>
           </>
-        ) : (
+        ) : activeTab === 'email_queue' ? (
           /* =================== TAB 2: EMAIL QUEUE & APPROVALS =================== */
           <div className="flex-1 overflow-y-auto space-y-3.5 my-3 pr-1">
             {/* Resend Engine Status Strip */}
@@ -1087,6 +1225,301 @@ export const AdminDashboardModal: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+        ) : (
+          /* =================== TAB 3: MULTI-SOURCE FEED INGESTION =================== */
+          <div className="flex-1 overflow-y-auto min-h-0 py-4 space-y-6">
+            {/* Top Status Banner */}
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50/50 border border-purple-200/80">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-purple-200/80 text-purple-900 text-[10px] font-bold tracking-wide uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>3-Hour GitHub Actions Scheduler Active</span>
+                  </div>
+                  <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-1.5">
+                    <span>Automated Multi-Platform Event Pipeline</span>
+                  </h3>
+                  <p className="text-xs text-zinc-600">
+                    Runs every 3 hours (<code>0 */3 * * *</code>) on GitHub cloud runners, normalizes feeds, and upserts directly to Supabase.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href="https://github.com/devendrs2313/pulse-meet/actions"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-2 bg-white hover:bg-zinc-50 border border-purple-200 rounded-xl text-xs font-semibold text-purple-900 transition-all flex items-center gap-1 shadow-2xs"
+                  >
+                    <span>View Runs</span>
+                    <ExternalLink className="w-3 h-3 text-purple-600" />
+                  </a>
+                  <button
+                    type="button"
+                    disabled={isSyncingLive}
+                    onClick={handleManualSyncTrigger}
+                    className="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {isSyncingLive ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                    <span>Refresh Live Catalog</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Status Metrics */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-purple-200/50">
+                <div className="bg-white/80 p-2.5 rounded-xl border border-purple-100">
+                  <div className="text-[10px] text-zinc-500 font-medium uppercase">Ingested Events</div>
+                  <div className="text-base font-bold text-zinc-900 mt-0.5">{events.length}</div>
+                </div>
+                <div className="bg-white/80 p-2.5 rounded-xl border border-purple-100">
+                  <div className="text-[10px] text-zinc-500 font-medium uppercase">Active Platforms</div>
+                  <div className="text-base font-bold text-purple-700 mt-0.5">5 Sources</div>
+                </div>
+                <div className="bg-white/80 p-2.5 rounded-xl border border-purple-100">
+                  <div className="text-[10px] text-zinc-500 font-medium uppercase">Scheduler Cadence</div>
+                  <div className="text-base font-bold text-emerald-700 mt-0.5">Every 3 Hours</div>
+                </div>
+                <div className="bg-white/80 p-2.5 rounded-xl border border-purple-100">
+                  <div className="text-[10px] text-zinc-500 font-medium uppercase">Database Sync</div>
+                  <div className="text-base font-bold text-indigo-700 mt-0.5">
+                    {syncStatus.status === 'active' || syncStatus.status === 'synced' ? 'Supabase Live' : 'Local Fallback'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Platform Harvesters Grid */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-purple-600" />
+                <span>Connected Platform Harvesters</span>
+              </h4>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 font-black text-xs flex items-center justify-center flex-shrink-0">
+                    LU
+                  </div>
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-zinc-900">Luma Community Feeds</div>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">100% Automated</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-500">The Product Folks (TPF), Google Developer Groups (GDG), AI Builders Club, and regional founder calendars.</p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center flex-shrink-0">
+                    AT
+                  </div>
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-zinc-900">Atlassian Community (Bevy)</div>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">100% Automated</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-500">Atlassian Community Chapters across Delhi NCR and Bengaluru (Jira Platform, DevOps, AI in Software).</p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 font-black text-xs flex items-center justify-center flex-shrink-0">
+                    PT
+                  </div>
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-zinc-900">ProductTank (Mind the Product)</div>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">100% Automated</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-500">Mind the Product local chapter meetups, product management talks, and FinTech monetization sessions.</p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-black text-xs flex items-center justify-center flex-shrink-0">
+                    DP
+                  </div>
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-zinc-900">Devpost & Hack2skill</div>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">100% Automated</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-500">National and global AI & FinTech hackathons with prize pools, bounties, and incubation grants.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick URL / Text Importer (for LinkedIn, Facebook, and Any Site) */}
+            <div className="p-5 rounded-2xl border border-zinc-200 bg-white space-y-4 shadow-2xs">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-1.5">
+                    <PlusCircle className="w-4 h-4 text-purple-600" />
+                    <span>Quick Ingest from LinkedIn, Facebook, or Any URL</span>
+                  </h4>
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    Because LinkedIn and Facebook require user logins, paste the event link or details here to immediately publish it to the live feed.
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handlePublishCustomEvent} className="space-y-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                    Event Registration / RSVP URL
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="url"
+                      value={importUrl}
+                      onChange={(e) => setImportUrl(e.target.value)}
+                      onBlur={(e) => handleUrlBlur(e.target.value)}
+                      placeholder="e.g. https://www.linkedin.com/events/... or https://facebook.com/events/..."
+                      className="w-full pl-9 pr-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    />
+                    <LinkIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      Event Title *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={importTitle}
+                      onChange={(e) => setImportTitle(e.target.value)}
+                      placeholder="e.g. NextGen AI & FinTech Builders Meetup"
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      Organizer Name
+                    </label>
+                    <input
+                      type="text"
+                      value={importOrganizer}
+                      onChange={(e) => setImportOrganizer(e.target.value)}
+                      placeholder="e.g. Delhi Founders Club"
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      Date *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={importDate}
+                      onChange={(e) => setImportDate(e.target.value)}
+                      placeholder="e.g. Sat, Nov 28"
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      Time
+                    </label>
+                    <input
+                      type="text"
+                      value={importTime}
+                      onChange={(e) => setImportTime(e.target.value)}
+                      placeholder="e.g. 05:00 PM - 08:00 PM IST"
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      City
+                    </label>
+                    <select
+                      value={importCity}
+                      onChange={(e) => setImportCity(e.target.value)}
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    >
+                      <option value="Delhi NCR">Delhi NCR</option>
+                      <option value="Bengaluru">Bengaluru</option>
+                      <option value="Mumbai">Mumbai</option>
+                      <option value="San Francisco">San Francisco</option>
+                      <option value="London">London</option>
+                      <option value="Remote">Global Online / Remote</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      Venue Address / Location
+                    </label>
+                    <input
+                      type="text"
+                      value={importVenue}
+                      onChange={(e) => setImportVenue(e.target.value)}
+                      placeholder="e.g. WeWork Forum, Cyber City, Gurgaon"
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      Category
+                    </label>
+                    <select
+                      value={importCategory}
+                      onChange={(e) => setImportCategory(e.target.value)}
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    >
+                      <option value="AI / ML">AI / ML</option>
+                      <option value="Product">Product</option>
+                      <option value="Finance / FinTech">Finance / FinTech</option>
+                      <option value="Engineering">Engineering</option>
+                      <option value="Leadership">Leadership</option>
+                      <option value="Design">Design</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                      Event Mode
+                    </label>
+                    <select
+                      value={importMode}
+                      onChange={(e) => setImportMode(e.target.value as any)}
+                      className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-xl bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-purple-500 text-zinc-900"
+                    >
+                      <option value="offline">In-Person (Offline)</option>
+                      <option value="online">Virtual (Online)</option>
+                      <option value="hybrid">Hybrid</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={isSubmittingImport}
+                    className="px-5 py-2.5 bg-zinc-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {isSubmittingImport ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PlusCircle className="w-3.5 h-3.5 text-purple-400" />}
+                    <span>Publish Event to Live Feed</span>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
