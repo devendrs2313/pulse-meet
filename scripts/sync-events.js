@@ -183,6 +183,35 @@ async function harvestFeeds() {
       featured: true,
       bannerImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=60',
       communityCadence: 'Quarterly Flagship'
+    },
+    {
+      id: 'luma-delhi-ai-founders-conclave',
+      title: 'Delhi AI & FinTech Founders Conclave 2026',
+      organizer: {
+        name: 'Delhi Tech Network 🌐',
+        id: 'delhi-tech-network',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60',
+        verified: true
+      },
+      sourcePlatform: 'luma',
+      tagline: 'High-signal networking and live demos with AI agents and next-gen FinTech infrastructure',
+      description: 'Join 150+ startup founders, AI researchers, and FinTech operators in Connaught Place for lightning keynotes, live product launches, and investor matching.',
+      date: 'Sat, Oct 17',
+      time: '05:00 PM - 08:30 PM IST',
+      isoDate: '2026-10-17T17:00:00+05:30',
+      location: 'WeWork Forum, DLF Cyber City, Gurgaon',
+      city: 'Delhi NCR',
+      area: 'DLF Cyber City',
+      venue: 'WeWork Forum, Building 10, DLF Cyber City, Gurgaon',
+      venueUrl: 'https://maps.google.com/?q=WeWork+Forum+DLF+Cyber+City',
+      price: 'Free',
+      mode: 'offline',
+      categories: ['AI / ML', 'Finance / FinTech', 'Product'],
+      rsvpUrl: 'https://lu.ma/delhi-ai-fintech-conclave-2026',
+      attendeeCount: 180,
+      featured: true,
+      bannerImage: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60',
+      communityCadence: 'Monthly Flagship'
     }
   ];
 
