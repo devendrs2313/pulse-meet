@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    background-color: #FAFAFA;
+    color: #27272A;
+  }
+}
+
+/* Custom scrollbar hiding for smooth pill scrubs */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile pill slide hint animation */
+@keyframes mobilePillPeek {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-35px);
+  }
+  60% {
+    transform: translateX(4px);
+  }
+  80% {
+    transform: translateX(0);
+  }
+}
+
+.animate-pill-hint {
+  animation: mobilePillPeek 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.8s 1;
+}
+
+/* Bell ring/wobble nudge animation */
+@keyframes bellNudge {
+  0%, 100% {
+    transform: rotate(0);
+  }
+  10%, 30% {
+    transform: rotate(14deg);
+  }
+  20%, 40% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+  60% {
+    transform: rotate(-4deg);
+  }
+  70% {
+    transform: rotate(0);
+  }
+}
+
+.animate-bell-nudge {
+  animation: bellNudge 2.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+  transform-origin: top center;
+}
