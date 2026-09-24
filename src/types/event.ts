@@ -51,6 +51,8 @@ export interface EventItem {
   speakers?: Speaker[];
   agenda?: string[];
   bannerUrl?: string;
+  createdAt?: string;
+  isNew?: boolean;
 }
 
 export interface PastEdition {

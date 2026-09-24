@@ -91,7 +91,8 @@ export async function fetchLiveEvents(): Promise<EventItem[] | null> {
       },
       seats: item.seats || undefined,
       speakers: item.speakers || [],
-      bannerUrl: item.banner_image || item.bannerUrl || undefined
+      bannerUrl: item.banner_image || item.bannerUrl || undefined,
+      createdAt: item.created_at || item.createdAt
     }));
   } catch (error) {
     console.warn('[Supabase] Failed to fetch live events, using local fallback:', error);

@@ -13,7 +13,8 @@ import {
   Share2,
   Ticket,
   Check,
-  Bell
+  Bell,
+  Sparkles
 } from 'lucide-react';
 
 interface EventCardProps {
@@ -88,8 +89,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, featured = false })
           
           {/* Badges on top banner */}
           <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-            {/* Mode Badge */}
-            <div className="flex items-center gap-1.5">
+            {/* Mode Badge & NEW Tag */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {event.isNew && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 backdrop-blur-md shadow-md shadow-amber-500/30 border border-amber-300 ring-2 ring-amber-400/20 animate-pulse">
+                  <Sparkles className="w-3 h-3 fill-amber-950" />
+                  <span>NEW</span>
+                </span>
+              )}
               {event.mode === 'offline' && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/95 text-rose-700 backdrop-blur-md shadow-sm">
                   <MapPin className="w-3 h-3" />
@@ -174,10 +181,18 @@ export const EventCard: React.FC<EventCardProps> = ({ event, featured = false })
               )}
             </div>
 
-            {/* Cadence indicator */}
-            <span className="text-[10px] text-zinc-500 font-mono bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200/60 truncate flex-shrink-0">
-              {event.organizer.cadenceBadge}
-            </span>
+            {/* Cadence indicator & NEW tag */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {event.isNew && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 shadow-xs border border-amber-300 animate-pulse">
+                  <Sparkles className="w-2.5 h-2.5 fill-amber-950" />
+                  <span>NEW</span>
+                </span>
+              )}
+              <span className="text-[10px] text-zinc-500 font-mono bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200/60 truncate">
+                {event.organizer.cadenceBadge}
+              </span>
+            </div>
           </div>
 
           {/* Title & Tagline */}

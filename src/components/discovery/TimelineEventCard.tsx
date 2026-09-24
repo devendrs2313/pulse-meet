@@ -89,6 +89,12 @@ export const TimelineEventCard: React.FC<TimelineEventCardProps> = ({ event }) =
         <div>
           {/* Top Row: Time & Badges */}
           <div className="flex items-center gap-2 flex-wrap mb-1.5">
+            {event.isNew && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 shadow-xs border border-amber-300 ring-2 ring-amber-400/20 animate-pulse">
+                <Sparkles className="w-3 h-3 fill-amber-950" />
+                <span>NEW</span>
+              </span>
+            )}
             <span className="text-xs sm:text-sm font-semibold font-mono text-zinc-500 tracking-tight">
               {formattedStartTime}
             </span>

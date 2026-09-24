@@ -167,16 +167,48 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setNotificationModalTarget(target || {});
   }, []);
 
+/**
+ * Automatically tags events with isNew: true if they belong to the latest batch of added events,
+ * and maintains that tag until a newer batch or newer event is added to the website.
+ */
+function tagNewEvents(list: EventItem[]): EventItem[] {
+  if (!list || list.length === 0) return list;
+
+  const timestamps = list
+    .map(e => (e.createdAt ? new Date(e.createdAt).getTime() : 0))
+    .filter(t => !isNaN(t) && t > 0);
+
+  if (timestamps.length === 0) {
+    return list.map(e => ({
+      ...e,
+      isNew: Boolean(e.isNew)
+    }));
+  }
+
+  const maxTimestamp = Math.max(...timestamps);
+  // Mark all events added in the latest addition wave (within 12 hours of the highest createdAt)
+  const threshold = maxTimestamp - 12 * 60 * 60 * 1000;
+
+  return list.map(e => {
+    const t = e.createdAt ? new Date(e.createdAt).getTime() : 0;
+    const isLatestAddition = Boolean(e.isNew || (t > 0 && t >= threshold));
+    return {
+      ...e,
+      isNew: isLatestAddition
+    };
+  });
+}
+
   // Events state: populated with mockData + custom events, dynamically refreshed from Supabase if configured
   const [events, setEvents] = useState<EventItem[]>(() => {
     try {
       const rawCustom = localStorage.getItem('pulse_custom_events');
       if (rawCustom) {
         const customEvents: EventItem[] = JSON.parse(rawCustom);
-        return [...customEvents, ...EVENTS_DATA];
+        return tagNewEvents([...customEvents, ...EVENTS_DATA]);
       }
     } catch {}
-    return EVENTS_DATA;
+    return tagNewEvents(EVENTS_DATA);
   });
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     lastSyncedAt: null,
@@ -235,7 +267,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             }
           });
 
-          return allMerged;
+          return tagNewEvents(allMerged);
         });
       }
       const status = await fetchSyncStatus();

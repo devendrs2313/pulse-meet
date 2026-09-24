@@ -101,7 +101,13 @@ export const EventDetailModal: React.FC = () => {
 
           {/* Bottom Banner Info */}
           <div className="absolute bottom-4 left-6 right-6 text-white">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              {event.isNew && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 shadow-sm border border-amber-300 ring-2 ring-amber-400/20 animate-pulse">
+                  <Sparkles className="w-3.5 h-3.5 fill-amber-950" />
+                  <span>NEW EVENT</span>
+                </span>
+              )}
               {event.mode === 'offline' && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/90 text-white">
                   <MapPin className="w-3 h-3" />
