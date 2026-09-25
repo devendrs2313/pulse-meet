@@ -16,8 +16,8 @@ import { AuthModal } from './components/auth/AuthModal';
 import { ProfileModal } from './components/auth/ProfileModal';
 import { AdminDashboardModal } from './components/admin/AdminDashboardModal';
 import { AIChatConciergeModal } from './components/ai/AIChatConciergeModal';
-import { NotificationConfigModal } from './components/notification/NotificationConfigModal';
-import { Compass, RotateCcw, CheckCircle2, MapPin, Radar, ListTree, LayoutGrid, Bot, X } from 'lucide-react';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { Compass, RotateCcw, CheckCircle2, MapPin, Radar, ListTree, LayoutGrid, Bot, X, Sparkles } from 'lucide-react';
 
 export const App: React.FC = () => {
   const { 
@@ -27,6 +27,7 @@ export const App: React.FC = () => {
     notifyToast,
     setNotifyToast,
     setIsLocationPromptOpen,
+    setIsMatchModalOpen,
     setSelectedVibe,
     setModeFilter,
     setSelectedCategory,
@@ -34,7 +35,9 @@ export const App: React.FC = () => {
     setFreeOnly,
     currentUser,
     isAIConciergeOpen,
-    setIsAIConciergeOpen
+    setIsAIConciergeOpen,
+    activeEventDetail,
+    setActiveEventDetail
   } = useApp();
 
   const [viewMode, setViewMode] = useState<'timeline' | 'grid'>('timeline');
@@ -72,100 +75,83 @@ export const App: React.FC = () => {
       )}
 
       {/* Main Content Area */}
-      <main className="w-full pt-14 sm:pt-16 flex-1">
+      <main className="w-full pt-20 sm:pt-24 flex-1">
         
         {/* VIEW 1: DISCOVER FEED */}
         {activeTab === 'explore' && (
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-10 pt-2 pb-6 sm:py-6">
+          <div className="max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 pt-2 pb-10">
             
             {/* Ambient Background Radial Glow */}
             <div className="relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-40 bg-gradient-to-b from-indigo-100/40 via-emerald-50/15 to-transparent rounded-full blur-3xl -z-10 pointer-events-none" />
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-full h-44 bg-gradient-to-b from-indigo-100/30 via-emerald-50/15 to-transparent rounded-full blur-3xl -z-10 pointer-events-none" />
 
-              {/* Clean Streamlined Header */}
-              <div className="pt-1 pb-3 sm:pb-4 flex flex-col justify-between gap-2 border-b border-zinc-200/80 mb-4 sm:mb-5">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white border border-zinc-200/80 text-zinc-600 shadow-2xs">
-                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      <span className="text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wide">
-                        Live Radar · {currentCityObj.name}
-                      </span>
-                    </div>
-
-                    {/* Active Region Scanner Button (desktop view) */}
-                    <button
-                      onClick={() => setIsLocationPromptOpen(true)}
-                      className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200/80 text-xs font-semibold transition-all shadow-2xs"
-                    >
-                      <MapPin className="w-3 h-3 text-indigo-600 flex-shrink-0" />
-                      <span>{currentCityObj.name}</span>
-                      <span className="text-[10px] text-indigo-600 underline ml-0.5">Change</span>
-                    </button>
-                  </div>
-
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 leading-snug">
-                    {currentUser ? (
-                      <span className="flex items-center gap-2 flex-wrap">
-                        <span>Hi {currentUser.name.split(' ')[0]} 👋</span>
-                        <span className="text-[11px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
-                          {currentUser.role}
-                        </span>
-                      </span>
-                    ) : (
-                      `Curated Event Gatherings in ${currentCityObj.name}`
-                    )}
+              {/* Lovable Top Header: "Events" + 4-Icon View/Location Control Pill (Image 1 Style) */}
+              <div className="pt-2 pb-3 sm:pb-4 flex items-center justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2.5">
+                  <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-zinc-900 leading-none">
+                    {currentUser ? `Events for ${currentUser.name.split(' ')[0]}` : 'Events'}
                   </h1>
-                  <p className="text-xs text-zinc-500 mt-1 leading-relaxed">
-                    {currentUser 
-                      ? `Your personalized radar is locked on ${currentCityObj.name} · Filtering for ${currentUser.formats.length === 2 ? 'In-Person & Virtual' : currentUser.formats[0]} events`
-                      : `Indexed across Luma, Meetup, LinkedIn & Community Calendars`
-                    }
-                  </p>
-                </div>
-              </div>
-
-              {/* Unified Filter Suite */}
-              <div className="mb-4 sm:mb-5">
-                <FilterBar />
-              </div>
-
-              {/* Sleek 1-Line Timeline / Grid Toggle Strip */}
-              <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
-                <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  <span>Scheduled Timeline ({filteredEvents.length})</span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-semibold border border-emerald-200/80 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>{currentCityObj.name}</span>
+                  </span>
                 </div>
 
-                {/* View mode toggle: Timeline vs Grid */}
-                <div className="flex items-center bg-zinc-100 p-0.5 rounded-lg border border-zinc-200/70">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('timeline')}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
-                      viewMode === 'timeline'
-                        ? 'bg-white text-zinc-900 shadow-2xs border border-zinc-200/70'
-                        : 'text-zinc-500 hover:text-zinc-800'
-                    }`}
-                    title="Timeline view with date segregation"
-                  >
-                    <ListTree className="w-3.5 h-3.5 text-indigo-600" />
-                    <span className="hidden xs:inline">Timeline</span>
-                  </button>
+                {/* 4-Icon Control Pill (Image 1 Style: Card / List / Map / Match) */}
+                <div className="inline-flex items-center bg-white p-1 rounded-full border border-zinc-200/90 shadow-2xs gap-0.5">
+                  {/* Grid View */}
                   <button
                     type="button"
                     onClick={() => setViewMode('grid')}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all ${
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
                       viewMode === 'grid'
-                        ? 'bg-white text-zinc-900 shadow-2xs border border-zinc-200/70'
-                        : 'text-zinc-500 hover:text-zinc-800'
+                        ? 'bg-zinc-900 text-white shadow-2xs'
+                        : 'text-zinc-500 hover:text-zinc-900'
                     }`}
-                    title="Card grid view"
+                    title="Grid Card View"
                   >
-                    <LayoutGrid className="w-3.5 h-3.5 text-zinc-500" />
-                    <span className="hidden xs:inline">Grid</span>
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Timeline View */}
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('timeline')}
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all ${
+                      viewMode === 'timeline'
+                        ? 'bg-zinc-900 text-white shadow-2xs'
+                        : 'text-zinc-500 hover:text-zinc-900'
+                    }`}
+                    title="Timeline Calendar View"
+                  >
+                    <ListTree className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Region Picker */}
+                  <button
+                    type="button"
+                    onClick={() => setIsLocationPromptOpen(true)}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-all"
+                    title={`Current City: ${currentCityObj.name}. Click to change.`}
+                  >
+                    <MapPin className="w-3.5 h-3.5 text-indigo-600" />
+                  </button>
+
+                  {/* Match Compass */}
+                  <button
+                    type="button"
+                    onClick={() => setIsMatchModalOpen(true)}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-all"
+                    title="Match Compass AI"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                   </button>
                 </div>
+              </div>
+
+              {/* Lovable Category & Filter Strip */}
+              <div className="mb-5 sm:mb-6">
+                <FilterBar />
               </div>
 
               {/* Event Feed: Timeline View or Grid View */}
@@ -237,7 +223,15 @@ export const App: React.FC = () => {
       <MatchModal />
 
       {/* Deep Dive Event Details Modal */}
-      <EventDetailModal />
+      <ErrorBoundary 
+        key={activeEventDetail?.id || 'none'} 
+        resetKey={activeEventDetail?.id} 
+        isModal 
+        fallbackTitle="Event Details Unavailable" 
+        onReset={() => setActiveEventDetail(null)}
+      >
+        <EventDetailModal />
+      </ErrorBoundary>
 
       {/* User Authentication & Profile Registration Modal */}
       <AuthModal />
@@ -261,16 +255,13 @@ export const App: React.FC = () => {
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-indigo-600 animate-pulse" />
           </div>
           <span className="hidden sm:inline text-xs font-bold tracking-wide">
-            AI Concierge & Alerts
+            PulseAI Concierge
           </span>
         </button>
       )}
 
       {/* AI Event Concierge Chat Modal */}
       <AIChatConciergeModal />
-
-      {/* Email Notification Configuration & Approval Request Modal */}
-      <NotificationConfigModal />
 
       {/* Mobile Bottom Dock Navigation */}
       <MobileNav />

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { signIn, signUp, SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD } from '../../lib/auth';
+import { signIn, signUp } from '../../lib/auth';
 import { UserRole } from '../../types/auth';
 import { FormatType } from '../../types/event';
 import { CITIES } from '../../data/mockData';
-import { X, Lock, Mail, User, Sparkles, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { X, Lock, Mail, User, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 
 const ROLES: UserRole[] = [
   'Product Manager',
@@ -47,9 +47,14 @@ export const AuthModal: React.FC = () => {
   const [city, setCity] = useState('delhi-ncr');
   const [formats, setFormats] = useState<FormatType[]>(['offline']);
   const [categories, setCategories] = useState<string[]>(['Product Management', 'AI / ML']);
-  const [emailAlerts, setEmailAlerts] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setErrorMessage(null);
+    }
+  }, [isAuthModalOpen]);
 
   if (!isAuthModalOpen) return null;
 
@@ -63,17 +68,9 @@ export const AuthModal: React.FC = () => {
     setFormats(prev => {
       if (prev.includes(fmt)) {
         if (prev.length === 1) return prev; // keep at least one
-        return prev.filter(f => f !== fmt);
       }
       return [...prev, fmt];
     });
-  };
-
-  const handleQuickFillAdmin = () => {
-    setMode('login');
-    setEmail(SUPER_ADMIN_EMAIL);
-    setPassword(SUPER_ADMIN_PASSWORD);
-    setErrorMessage(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,8 +105,7 @@ export const AuthModal: React.FC = () => {
           role,
           city,
           formats,
-          categories,
-          emailAlerts
+          categories
         });
 
         if (res.success && res.user) {
@@ -120,7 +116,7 @@ export const AuthModal: React.FC = () => {
           if (categories.length > 0) setSelectedCategory(categories[0]);
 
           setIsAuthModalOpen(false);
-          setNotifyToast(`🎯 Profile created! Your radar is locked on ${role} events.`);
+          setNotifyToast(`🎉 Welcome to PulseMeet, ${res.user.name}! Your personalized radar is active.`);
         } else {
           setErrorMessage(res.error || 'Failed to create profile.');
         }
@@ -194,21 +190,6 @@ export const AuthModal: React.FC = () => {
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
           {/* Scrollable Form Body */}
           <div className="overflow-y-auto p-4 sm:p-5 pt-3 space-y-3.5 flex-1 text-xs">
-            {/* Super Admin Quick Credentials Helper */}
-            <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 text-amber-900 min-w-0">
-                <ShieldCheck className="w-4 h-4 text-amber-700 flex-shrink-0" />
-                <span className="truncate">Super Admin: Devendrs2313@gmail.com</span>
-              </div>
-              <button
-                type="button"
-                onClick={handleQuickFillAdmin}
-                className="text-[11px] font-semibold text-amber-900 bg-amber-200/70 hover:bg-amber-200 px-2 py-1 rounded-md transition-colors flex-shrink-0 ml-1.5"
-              >
-                Fill Admin
-              </button>
-            </div>
-
             {/* Error Alert */}
             {errorMessage && (
               <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
@@ -348,20 +329,6 @@ export const AuthModal: React.FC = () => {
                       );
                     })}
                   </div>
-                </div>
-
-                {/* Email Alerts Toggle */}
-                <div className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold text-zinc-900 text-xs">Event & Seat Alerts</div>
-                    <div className="text-[10px] text-zinc-500">Weekly radar digests & RSVP alerts</div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={emailAlerts}
-                    onChange={e => setEmailAlerts(e.target.checked)}
-                    className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                  />
                 </div>
               </>
             )}

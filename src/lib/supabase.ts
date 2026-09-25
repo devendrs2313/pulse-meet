@@ -81,9 +81,16 @@ export async function fetchLiveEvents(): Promise<EventItem[] | null> {
       rsvpUrl: item.rsvp_url || item.rsvpUrl,
       sourcePlatform: item.source_platform || item.sourcePlatform || 'Luma',
       price: item.price || 'Free',
-      organizer: typeof item.organizer === 'object' ? item.organizer : {
+      organizer: (item.organizer && typeof item.organizer === 'object') ? {
+        id: item.organizer.id || 'community-organizer',
+        name: item.organizer.name || 'Community Organizer',
+        avatar: item.organizer.avatar || '',
+        verified: Boolean(item.organizer.verified ?? true),
+        cadenceBadge: item.organizer.cadenceBadge || 'Active Member',
+        memberCount: Number(item.organizer.memberCount) || 500
+      } : {
         id: 'community-organizer',
-        name: 'Community Organizer',
+        name: typeof item.organizer === 'string' && item.organizer.trim() ? item.organizer.trim() : 'Community Organizer',
         avatar: '',
         verified: true,
         cadenceBadge: 'Active Member',
@@ -92,6 +99,7 @@ export async function fetchLiveEvents(): Promise<EventItem[] | null> {
       seats: item.seats || undefined,
       speakers: item.speakers || [],
       bannerUrl: item.banner_image || item.bannerUrl || undefined,
+      isNew: item.is_new !== undefined ? Boolean(item.is_new) : (item.isNew !== undefined ? Boolean(item.isNew) : undefined),
       createdAt: item.created_at || item.createdAt
     }));
   } catch (error) {

@@ -21,9 +21,21 @@ export const CITIES: CityInfo[] = [
 
 export const TECH_CATEGORIES = [
   'All Fields',
+  'Founders, Pitch & VC',
+  'Agentic AI & LLMOps',
+  'B2B SaaS & GTM Growth',
+  'Finance / FinTech',
+  'Modern Data Stack & Streaming',
+  'Hardware & Robotics',
+  'ClimateTech & Clean Energy',
+  'HealthTech & BioAI',
+  'Spatial Computing & Game Dev',
+  'Indie Hacking & Micro-SaaS',
+  'Digital Public Infrastructure (DPI & ONDC)',
+  'LegalTech & AI Compliance',
+  'Hacker Socials & Unconferences',
   'Product Management',
   'AI / ML',
-  'Finance / FinTech',
   'Cloud & DevOps',
   'Rust & Systems',
   'Web3 & Blockchain',
@@ -163,7 +175,9 @@ export const COMMUNITIES_DATA: Community[] = [
     upcomingCount: 2,
     pastEditions: [
       { id: 'tpf-past-1', title: 'Product Teardown: Quick Commerce & Swiggy Instamart', date: 'Aug 29, 2026', attendees: 180, keyTakeaways: 'Cart conversion economics, 10-minute slot allocation, and search drop-off analysis.', venueOrPlatform: 'WeWork Galaxy' },
-      { id: 'tpf-past-2', title: 'Product Winter 2025 Cohort Demo Day', date: 'Jan 10, 2026', attendees: 500, keyTakeaways: 'Graduation pitches from 40 early-stage PM Fellows presenting real capstone PRDs.', venueOrPlatform: 'Virtual Livestream' }
+      { id: 'tpf-past-2', title: 'Product Winter 2025 Cohort Demo Day', date: 'Jan 10, 2026', attendees: 500, keyTakeaways: 'Graduation pitches from 40 early-stage PM Fellows presenting real capstone PRDs.', venueOrPlatform: 'Virtual Livestream' },
+      { id: 'tpf-past-3', title: 'Serendipity - Leadership Dinner', date: 'Sep 25, 2026', attendees: 30, keyTakeaways: 'VP of Products & founders roundtable on scaling challenges, AI product roadmaps, and org dynamics.', venueOrPlatform: 'Horizon Colony, Gurgaon' },
+      { id: 'tpf-past-4', title: 'Serendipity - Marketing & Growth Leaders Dinner', date: 'Sep 25, 2026', attendees: 30, keyTakeaways: 'Growth leaders & CMOs discussing retention funnels, performance scaling, and AI acquisition loops.', venueOrPlatform: 'Horizon Colony, Gurgaon' }
     ],
     externalUrl: 'https://www.theproductfolks.com/'
   },
@@ -501,6 +515,120 @@ export const COMMUNITIES_DATA: Community[] = [
       { id: 'defimum-past-1', title: 'Tokenized Treasury Bills & Compliant DeFi Stacks', date: 'Jan 16, 2026', attendees: 110, keyTakeaways: 'On-chain liquidity pools and institutional custody frameworks.', venueOrPlatform: 'WeWork Enam Sambhav, BKC, Mumbai' }
     ],
     externalUrl: 'https://defimumbai.xyz'
+  },
+  {
+    id: 'founders-vc-blr',
+    name: 'Bengaluru Founders & Angel Syndicate',
+    avatar: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=150&auto=format&fit=crop&q=80',
+    description: 'High-conviction operator angel syndicate and founder circle hosting closed-door demo days, pitch teardowns, and term-sheet debriefs.',
+    city: 'bengaluru',
+    topics: ['Founders, Pitch & VC', 'B2B SaaS & GTM Growth'],
+    cadence: 'Meets 1st & 3rd Thursday monthly',
+    cadenceType: 'bi-weekly',
+    consistencyScore: '98% Reliability · Curated Syndicate',
+    nextForecast: 'Next Edition: 1st Thursday of next month',
+    activityScore: '🔥 High Signal: Active Seed & Pre-A Rounds',
+    memberCount: 4600,
+    upcomingCount: 2,
+    pastEditions: [
+      { id: 'fvc-past-1', title: 'Q2 Seed Pitch & Term Sheet Dynamics', date: 'Jul 16, 2026', attendees: 85, keyTakeaways: 'Valuation benchmarks, dilution guardrails, and SAFE note structures in India.', venueOrPlatform: 'WeWork Galaxy, Residency Rd' }
+    ],
+    externalUrl: 'https://lu.ma/blr-founders-syndicate'
+  },
+  {
+    id: 'agentic-ai-society-delhi',
+    name: 'Agentic AI & LLMOps Society (Delhi NCR)',
+    avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
+    description: 'Engineering community building autonomous agent loops, LangGraph state machines, real-time evals, and multi-agent coordination.',
+    city: 'delhi-ncr',
+    topics: ['Agentic AI & LLMOps', 'AI / ML', 'Full-Stack & React'],
+    cadence: 'Meets alternate Saturdays',
+    cadenceType: 'bi-weekly',
+    consistencyScore: '99% Reliability · Fortnightly Sprints',
+    nextForecast: 'Next Edition: Saturday 4:00 PM',
+    activityScore: '⚡ Hyper Active: Live Code & Benchmark Demos',
+    memberCount: 5100,
+    upcomingCount: 2,
+    pastEditions: [
+      { id: 'agentic-del-past-1', title: 'Hierarchical Multi-Agent Orchestration with LangGraph', date: 'Aug 22, 2026', attendees: 140, keyTakeaways: 'State persistence, human-in-the-loop checkpoints, and tool error recovery.', venueOrPlatform: 'Innov8 Cyber Hub, Gurgaon' }
+    ],
+    externalUrl: 'https://lu.ma/delhi-agentic-society'
+  },
+  {
+    id: 'blr-robotics-hardware',
+    name: 'Bengaluru Hardware & Robotics Collective',
+    avatar: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=150&auto=format&fit=crop&q=80',
+    description: 'Makers, drone architects, PCB designers, and embedded ROS2 engineers gathering for live hardware tear-downs and edge compute builds.',
+    city: 'bengaluru',
+    topics: ['Hardware & Robotics', 'Rust & Systems'],
+    cadence: 'Monthly Flagship (Last Saturday)',
+    cadenceType: 'monthly',
+    consistencyScore: '95% Reliability · Active Monthly Labs',
+    nextForecast: 'Next Edition: Last Saturday this month',
+    activityScore: '⚡ Active: Physical Hardware Demos & Prototyping',
+    memberCount: 3800,
+    upcomingCount: 1,
+    pastEditions: [
+      { id: 'robotics-past-1', title: 'ROS2 on Low-Power ARM & Real-Time LiDAR SLAM', date: 'Jul 25, 2026', attendees: 110, keyTakeaways: 'Hardware acceleration with micro-ROS and edge Kalman filtering.', venueOrPlatform: 'IISc Maker Space, CV Raman Rd' }
+    ],
+    externalUrl: 'https://blr-robotics.org'
+  },
+  {
+    id: 'indie-hackers-mumbai',
+    name: 'Indie Hackers & Micro-SaaS Mumbai',
+    avatar: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=150&auto=format&fit=crop&q=80',
+    description: 'Bootstrapped founders, solo developers, and cash-flow focused builders sharing MRR transparency, distribution hacks, and micro-acquisitions.',
+    city: 'mumbai',
+    topics: ['Indie Hacking & Micro-SaaS', 'B2B SaaS & GTM Growth'],
+    cadence: 'Meets 2nd Saturday monthly',
+    cadenceType: 'monthly',
+    consistencyScore: '97% Reliability · Monthly Meetups',
+    nextForecast: 'Next Edition: 2nd Saturday next month',
+    activityScore: '💡 High Energy: MRR Milestones & Live Product Audits',
+    memberCount: 4200,
+    upcomingCount: 1,
+    pastEditions: [
+      { id: 'ihmum-past-1', title: 'From $0 to $10k MRR: Cold Inbound & SEO for Micro-SaaS', date: 'Aug 08, 2026', attendees: 95, keyTakeaways: 'Programmatic SEO funnels and Stripe billing automation.', venueOrPlatform: 'WeWork BKC, Bandra' }
+    ],
+    externalUrl: 'https://indiehackers.com/mumbai'
+  },
+  {
+    id: 'dpi-ondc-collective',
+    name: 'India DPI & ONDC Open Guild',
+    avatar: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=150&auto=format&fit=crop&q=80',
+    description: 'Developers and product leaders shaping open commerce, UPI 2.0, Beckn Protocol, DigiYatra, and Account Aggregator ecosystems.',
+    city: 'bengaluru',
+    topics: ['Digital Public Infrastructure (DPI & ONDC)', 'Finance / FinTech'],
+    cadence: 'Meets 3rd Friday monthly',
+    cadenceType: 'monthly',
+    consistencyScore: '100% Reliability · Open Protocol Track',
+    nextForecast: 'Next Edition: 3rd Friday next month',
+    activityScore: '🏛️ Official Protocol Workgroups & Sandbox Hackathons',
+    memberCount: 6800,
+    upcomingCount: 1,
+    pastEditions: [
+      { id: 'ondc-past-1', title: 'ONDC Buyer & Seller App Integration Masterclass', date: 'Aug 21, 2026', attendees: 180, keyTakeaways: 'Beckn protocol message contracts, signing with Ed25519, and BAP/BPP dispatching.', venueOrPlatform: 'Nasscom 10k Startups Hub, Indiranagar' }
+    ],
+    externalUrl: 'https://ondc.org'
+  },
+  {
+    id: 'climatetech-clean-energy-delhi',
+    name: 'ClimateTech & Decarbonization Forum (Delhi NCR)',
+    avatar: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=150&auto=format&fit=crop&q=80',
+    description: 'Clean energy engineers, carbon accounting builders, and battery storage pioneers scaling grid technologies and ESG software.',
+    city: 'delhi-ncr',
+    topics: ['ClimateTech & Clean Energy', 'Hardware & Robotics'],
+    cadence: 'Quarterly Gathering',
+    cadenceType: 'quarterly',
+    consistencyScore: '94% Reliability · Regular Summits',
+    nextForecast: 'Next Edition: Expected November 2026',
+    activityScore: '🌱 High Impact: Clean Energy & Battery Analytics',
+    memberCount: 3100,
+    upcomingCount: 1,
+    pastEditions: [
+      { id: 'climate-past-1', title: 'Grid-Scale EV Telemetry & Battery Health Modeling', date: 'Jul 11, 2026', attendees: 120, keyTakeaways: 'Digital twin architectures for battery packs and real-time degradation metrics.', venueOrPlatform: 'India Habitat Centre, Lodhi Rd, New Delhi' }
+    ],
+    externalUrl: 'https://climatetech.in'
   }
 ];
 
@@ -1334,76 +1462,6 @@ export const EVENTS_DATA: EventItem[] = [
     bannerUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop&q=80'
   },
   {
-    id: 'event-del-03',
-    title: 'Serendipity - Leadership Dinner',
-    tagline: 'Curated evening for senior product leaders and tech founders',
-    description: 'An exclusive leadership dinner hosted by The Product Folks bringing together VP of Products, founders, and engineering executives to discuss scaling challenges, AI product roadmaps, and org dynamics in a private setting.',
-    mode: 'offline',
-    eventType: 'meetup',
-    vibe: 'career-pitching',
-    categories: ['Product Management', 'AI / ML'],
-    date: 'Friday, Sep 25, 2026',
-    time: '7:00 PM – 10:30 PM IST',
-    isoDate: '2026-09-25T19:00:00+05:30',
-    city: 'delhi-ncr',
-    area: 'Gurgaon',
-    venue: 'Horizon Colony, Golf Course Road, Gurgaon',
-    rsvpUrl: 'https://lu.ma/productfolks',
-    sourcePlatform: 'Luma',
-    price: 'Invite Only',
-    organizer: {
-      id: 'the-product-folks',
-      name: 'The Product Folks 🚀',
-      avatar: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=150&auto=format&fit=crop&q=80',
-      verified: true,
-      cadenceBadge: 'Curated Leader Circle',
-      memberCount: 145000
-    },
-    seats: { total: 30, filled: 28 },
-    speakers: [],
-    agenda: [
-      '07:00 PM - Cocktail Welcome & Executive Introductions',
-      '08:00 PM - Closed-Door Roundtable: Monetizing AI in B2B',
-      '09:30 PM - Curated Dinner & Strategic Connections'
-    ],
-    bannerUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80'
-  },
-  {
-    id: 'event-del-serendipity-marketing',
-    title: 'Serendipity - Marketing & Growth Leaders Dinner',
-    tagline: 'Curated closed-door evening for Heads of Growth, CMOs & Marketing VPs',
-    description: 'An intimate executive dinner hosted by The Product Folks bringing together growth leaders, CMOs, and marketing executives to discuss retention funnels, performance scaling, and AI acquisition loops.',
-    mode: 'offline',
-    eventType: 'meetup',
-    vibe: 'career-pitching',
-    categories: ['Product Management', 'UI/UX Design'],
-    date: 'Friday, Sep 25, 2026',
-    time: '7:00 PM – 10:30 PM IST',
-    isoDate: '2026-09-25T19:00:00+05:30',
-    city: 'delhi-ncr',
-    area: 'Gurgaon',
-    venue: 'Horizon Colony, Golf Course Road, Gurgaon',
-    rsvpUrl: 'https://lu.ma/productfolks',
-    sourcePlatform: 'Luma',
-    price: 'Invite Only',
-    organizer: {
-      id: 'the-product-folks',
-      name: 'The Product Folks 🚀',
-      avatar: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=150&auto=format&fit=crop&q=80',
-      verified: true,
-      cadenceBadge: 'Curated Leader Circle',
-      memberCount: 145000
-    },
-    seats: { total: 30, filled: 26 },
-    speakers: [],
-    agenda: [
-      '07:00 PM - Welcome Cocktails & Private Mixer',
-      '08:00 PM - Roundtable: Acquisition Playbooks & AI Search Shift',
-      '09:30 PM - Curated Dinner'
-    ],
-    bannerUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=80'
-  },
-  {
     id: 'event-del-ship-it-replit',
     title: 'Ship it | Replit x TPF',
     tagline: 'Hands-on builder sprint building & shipping full-stack AI apps on Replit Agent',
@@ -1993,5 +2051,504 @@ export const EVENTS_DATA: EventItem[] = [
       '08:45 PM - Open Mixer'
     ],
     bannerUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&auto=format&fit=crop&q=80'
+  },
+  // =================== 12 NEW HIGH-SIGNAL EVENT CATEGORIES ===================
+  {
+    id: 'event-fvc-blr-pitch-night',
+    title: 'Koramangala Pitch & Angels Demo Night 2026',
+    tagline: 'Closed-door live pitches, angel term sheets, and investor Q&A with top Tier-1 seed syndicates',
+    description: '10 curated early-stage startups take the stage in Koramangala to pitch live before a panel of institutional micro-VCs and seasoned founder-angels. Focus on seed to Series A metrics, defensibility, and unit economics.',
+    mode: 'offline',
+    eventType: 'meetup',
+    vibe: 'career-pitching',
+    categories: ['Founders, Pitch & VC', 'B2B SaaS & GTM Growth'],
+    date: 'Wednesday, Oct 21, 2026',
+    time: '6:00 PM – 9:30 PM IST',
+    isoDate: '2026-10-21T18:00:00+05:30',
+    city: 'bengaluru',
+    area: 'Koramangala',
+    venue: 'WeWork Galaxy, 43 Residency Rd, Bengaluru',
+    venueUrl: 'https://maps.google.com/?q=WeWork+Residency+Road+Bengaluru',
+    rsvpUrl: 'https://lu.ma/blr-founders-syndicate-pitch',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'founders-vc-blr',
+      name: 'Bengaluru Founders & Angel Syndicate',
+      avatar: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets 1st & 3rd Thursday monthly',
+      memberCount: 4600
+    },
+    seats: { total: 120, filled: 98 },
+    speakers: [
+      { name: 'Kavita Subramanian', role: 'Partner @ Elevation Seed Fund', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Arjun Mehra', role: '2x Founder, Angel Investor', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '06:00 PM - Founder & Angel Networking Mixer',
+      '06:45 PM - Keynote: What VCs Look For in H2 2026 Seed Rounds',
+      '07:15 PM - 10 Lightning Pitches (3 mins pitch + 3 mins investor grill)',
+      '08:30 PM - 1-on-1 Syndicate Breakouts & Dinner'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-agentic-ai-blr-sprint',
+    title: 'Bangalore Autonomous Agent Architectures & LLMOps Sprint',
+    tagline: 'Deep dive into LangGraph multi-agent routing, self-correcting loops, and real-time inference evals',
+    description: 'Hands-on architectural deep dive and code teardown covering deterministic state machines for autonomous agents, memory persistence across sessions, and automated evaluation pipelines for enterprise deployment.',
+    mode: 'offline',
+    eventType: 'workshop',
+    vibe: 'deep-tech',
+    categories: ['Agentic AI & LLMOps', 'AI / ML'],
+    date: 'Saturday, Oct 24, 2026',
+    time: '2:00 PM – 6:30 PM IST',
+    isoDate: '2026-10-24T14:00:00+05:30',
+    city: 'bengaluru',
+    area: 'Indiranagar',
+    venue: 'BHIVE Workspace, 12th Main Rd, Indiranagar, Bengaluru',
+    venueUrl: 'https://maps.google.com/?q=BHIVE+Indiranagar+Bengaluru',
+    rsvpUrl: 'https://lu.ma/blr-agentic-ai-sprints',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'ai-tinkerers-blr',
+      name: 'AI Tinkerers Bengaluru',
+      avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets 3rd Wednesday monthly',
+      memberCount: 5800
+    },
+    seats: { total: 100, filled: 86 },
+    speakers: [
+      { name: 'Dr. Siddharth Rao', role: 'Staff AI Research Scientist', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Rohan Sharma', role: 'Lead LLMOps Architect', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '02:00 PM - Doors Open & Setup Verification',
+      '02:30 PM - Production Architecture of Hierarchical Agents',
+      '03:45 PM - Live Code: Building Self-Correcting Code Generation with LangGraph',
+      '05:15 PM - Benchmarking & Guardrails: RAG Triad and Automated Hallucination Checks',
+      '06:00 PM - Open Demos & AMA'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-saas-gtm-blr-growth',
+    title: 'SaaS Playbook: 0 to $5M ARR, Inbound Moats & Outbound Engine',
+    tagline: 'Practical playbook on outbound sequencing, pricing tiers, and reducing churn for B2B SaaS',
+    description: 'Proven growth frameworks from CROs and VPs of Sales who took B2B enterprise software companies from zero traction to $5M+ ARR. Learn modern signal-based outbound engines, product qualification metrics, and pricing strategy.',
+    mode: 'offline',
+    eventType: 'meetup',
+    vibe: 'career-pitching',
+    categories: ['B2B SaaS & GTM Growth', 'Founders, Pitch & VC'],
+    date: 'Thursday, Oct 29, 2026',
+    time: '6:30 PM – 9:00 PM IST',
+    isoDate: '2026-10-29T18:30:00+05:30',
+    city: 'bengaluru',
+    area: 'HSR Layout',
+    venue: '91springboard, Sector 2, HSR Layout, Bengaluru',
+    venueUrl: 'https://maps.google.com/?q=91springboard+HSR+Layout',
+    rsvpUrl: 'https://lu.ma/blr-saas-gtm-growth',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'founders-vc-blr',
+      name: 'Bengaluru Founders & Angel Syndicate',
+      avatar: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets 1st & 3rd Thursday monthly',
+      memberCount: 4600
+    },
+    seats: { total: 110, filled: 89 },
+    speakers: [
+      { name: 'Nikhil Varma', role: 'Head of Growth @ Accel-backed SaaS', avatar: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Shalini Nair', role: 'VP Global Sales @ CloudScale', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '06:30 PM - Networking & Refreshments',
+      '07:00 PM - Signal-Based Outbound: Modern Tech Stack and Cold Conversion Math',
+      '07:45 PM - Moving Upmarket: ACVs from $5k to $50k',
+      '08:30 PM - Live Teardown of 2 Audience Sales Funnels'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-data-delhi-streaming',
+    title: 'Real-Time Streaming at Scale: Apache Kafka, Flink & Iceberg',
+    tagline: 'Modern lakehouse streaming architectures handling 100k+ events/sec with sub-second OLAP latency',
+    description: 'Technical masterclass hosted in DLF Cyber City Gurgaon. Learn how modern data platforms combine event-driven Kafka logs, stateful Flink stream transformations, and Apache Iceberg metadata tables for real-time analytics.',
+    mode: 'offline',
+    eventType: 'meetup',
+    vibe: 'deep-tech',
+    categories: ['Modern Data Stack & Streaming', 'Cloud & DevOps'],
+    date: 'Saturday, Nov 07, 2026',
+    time: '10:30 AM – 2:00 PM IST',
+    isoDate: '2026-11-07T10:30:00+05:30',
+    city: 'delhi-ncr',
+    area: 'DLF Cyber City, Gurgaon',
+    venue: 'WeWork Forum, DLF Cyber City, Building 10, Gurgaon',
+    venueUrl: 'https://maps.google.com/?q=WeWork+Forum+DLF+Cyber+City',
+    rsvpUrl: 'https://lu.ma/delhi-streaming-iceberg',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'grafana-delhi-community',
+      name: 'Grafana & Cloud Observability Delhi',
+      avatar: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Quarterly Flagship (~90-day cycle)',
+      memberCount: 6100
+    },
+    seats: { total: 130, filled: 104 },
+    speakers: [
+      { name: 'Pooja Singhania', role: 'Staff Data Architect @ Swiggy', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Devendra Joshi', role: 'Streaming Lead @ FinTech Scaleup', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '10:30 AM - Coffee & Registration',
+      '11:00 AM - Stateful Stream Processing with Apache Flink & RocksDB',
+      '12:00 PM - Iceberg Metadata Optimizations: Compaction, Partition Evolution & Schema Drift',
+      '01:00 PM - Case Study: Real-Time Fraud Feature Store Architecture',
+      '01:30 PM - Networking Lunch'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-robotics-blr-hardware',
+    title: 'Edge Robotics, Autonomous Drones & ROS2 Hardware Showcase',
+    tagline: 'Live robotics demonstrations, edge LiDAR SLAM, PCB micro-controllers, and ROS2 builds',
+    description: 'Hardware developers, embedded engineers, and autonomous robotics builders meet for physical demonstrations of autonomous rovers, quadcopters, and edge vision compute on Nvidia Jetson and Raspberry Pi 5.',
+    mode: 'offline',
+    eventType: 'meetup',
+    vibe: 'hands-on',
+    categories: ['Hardware & Robotics', 'Rust & Systems'],
+    date: 'Saturday, Nov 14, 2026',
+    time: '2:30 PM – 6:30 PM IST',
+    isoDate: '2026-11-14T14:30:00+05:30',
+    city: 'bengaluru',
+    area: 'Domlur',
+    venue: 'Maker’s Asylum & IKP Eden, Koramangala/Domlur, Bengaluru',
+    venueUrl: 'https://maps.google.com/?q=IKP+Eden+Bengaluru',
+    rsvpUrl: 'https://lu.ma/blr-edge-robotics-hardware',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'blr-robotics-hardware',
+      name: 'Bengaluru Hardware & Robotics Collective',
+      avatar: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Monthly Flagship (Last Saturday)',
+      memberCount: 3800
+    },
+    seats: { total: 90, filled: 76 },
+    speakers: [
+      { name: 'Karthik Balakrishnan', role: 'Autonomous Vehicle Engineer @ Skydio Alum', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Dr. Anita Desai', role: 'Robotics Research Faculty, IISc', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '02:30 PM - Hardware Lab Setup & Rover Pitlane Walkthrough',
+      '03:15 PM - ROS2 Micro-Controller Integration via CAN Bus & Serial',
+      '04:15 PM - Live Flight & Obstacle Avoidance Demo: Edge YOLOv10 on Drone',
+      '05:15 PM - Open Maker Floor & PCB Hardware Teardowns'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-climate-delhi-cleantech',
+    title: 'CleanTech & Decarbonization Summit: EV Battery & Grid Tech',
+    tagline: 'Scaling battery telemetry, solar microgrids, and carbon accounting software across India',
+    description: 'Bringing together clean energy founders, hardware battery architects, and ESG data engineers in Delhi NCR to address grid stability, EV battery degradation prediction, and carbon offset auditing.',
+    mode: 'offline',
+    eventType: 'conference',
+    vibe: 'deep-tech',
+    categories: ['ClimateTech & Clean Energy', 'Hardware & Robotics'],
+    date: 'Saturday, Nov 21, 2026',
+    time: '10:00 AM – 4:00 PM IST',
+    isoDate: '2026-11-21T10:00:00+05:30',
+    city: 'delhi-ncr',
+    area: 'Connaught Place',
+    venue: 'India Habitat Centre, Lodhi Road, New Delhi',
+    venueUrl: 'https://maps.google.com/?q=India+Habitat+Centre+New+Delhi',
+    rsvpUrl: 'https://lu.ma/delhi-cleantech-summit-2026',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'climatetech-clean-energy-delhi',
+      name: 'ClimateTech & Decarbonization Forum (Delhi NCR)',
+      avatar: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Quarterly Gathering',
+      memberCount: 3100
+    },
+    seats: { total: 150, filled: 124 },
+    speakers: [
+      { name: 'Sanjay Aggarwal', role: 'Founder @ CleanGrid India', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Dr. Meera Nambiar', role: 'Battery Electrochemistry Researcher', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '10:00 AM - Keynote: India’s 2030 Clean Energy Transition Roadmap',
+      '11:00 AM - Technical Session: BMS Firmware & Thermal Runaway Early Warning Systems',
+      '12:30 PM - Lunch & CleanTech Startup Showcase',
+      '01:30 PM - Panel: Carbon MRV (Measurement, Reporting, Verification) on Open Ledger',
+      '03:00 PM - Founder & Investor Roundtables'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-bioai-blr-healthtech',
+    title: 'BioAI & Clinical Generative Models Symposium 2026',
+    tagline: 'Deep generative models for molecular docking, clinical trial summarization, and genomics',
+    description: 'Leading researchers from computational biology and AI labs present breakthroughs in protein folding, small molecule design, and HIPAA-compliant medical LLM deployment in hospitals and diagnostic hubs.',
+    mode: 'both',
+    eventType: 'conference',
+    vibe: 'deep-tech',
+    categories: ['HealthTech & BioAI', 'AI / ML'],
+    date: 'Wednesday, Nov 25, 2026',
+    time: '4:00 PM – 8:00 PM IST',
+    isoDate: '2026-11-25T16:00:00+05:30',
+    city: 'bengaluru',
+    area: 'Whitefield',
+    venue: 'Sheraton Grand Whitefield, Tech Park & Hybrid Stream',
+    venueUrl: 'https://maps.google.com/?q=Sheraton+Grand+Whitefield+Bengaluru',
+    virtualPlatform: 'Zoom Webinar',
+    rsvpUrl: 'https://lu.ma/blr-bioai-healthtech-2026',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'ai-tinkerers-blr',
+      name: 'AI Tinkerers Bengaluru',
+      avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets 3rd Wednesday monthly',
+      memberCount: 5800
+    },
+    seats: { total: 140, filled: 112 },
+    speakers: [
+      { name: 'Dr. Vivek Sengupta', role: 'Head of Computational Biology @ Strand Life Sciences', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Ritu Krishnan', role: 'BioML Research Fellow', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '04:00 PM - Opening Remarks on Generative Biology',
+      '04:30 PM - Deep Learning for De Novo Antibody Generation',
+      '05:45 PM - Clinical RAG: Guardrails for Zero False-Positive Medical Diagnostics',
+      '06:45 PM - Panel: Navigating CDSCO & FDA AI Medical Device Regulations',
+      '07:30 PM - Dinner & BioTech Founder Networking'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-spatial-mumbai-gamedev',
+    title: 'VisionOS & Unreal Engine 5 Spatial Computing Sprint',
+    tagline: 'Building immersive spatial applications, real-time shaders, and WebXR experiences',
+    description: 'Game developers, 3D artists, and spatial UI designers congregate in Mumbai for hands-on demos with Apple Vision Pro, Meta Quest 3, and Unreal Engine 5 Nanite rendering for spatial workflows.',
+    mode: 'offline',
+    eventType: 'workshop',
+    vibe: 'hands-on',
+    categories: ['Spatial Computing & Game Dev', 'UI/UX Design'],
+    date: 'Saturday, Nov 28, 2026',
+    time: '1:00 PM – 6:00 PM IST',
+    isoDate: '2026-11-28T13:00:00+05:30',
+    city: 'mumbai',
+    area: 'Bandra Kurla Complex (BKC)',
+    venue: 'WeWork Enam Sambhav, C-20, G Block, BKC, Mumbai',
+    venueUrl: 'https://maps.google.com/?q=WeWork+Enam+Sambhav+BKC+Mumbai',
+    rsvpUrl: 'https://lu.ma/mumbai-spatial-computing-ue5',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'defi-mumbai-forum',
+      name: 'DeFi & Open Finance Builders (Mumbai)',
+      avatar: 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets monthly on Fridays',
+      memberCount: 4100
+    },
+    seats: { total: 80, filled: 68 },
+    speakers: [
+      { name: 'Aditya Mathur', role: 'Lead XR Architect @ GameCraft Studios', avatar: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Tanvi Shah', role: 'Spatial UI Lead', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '01:00 PM - Headset Calibration & Demo Station Walkthrough',
+      '01:45 PM - Spatial Computing Design Principles: Eye Tracking & Hand Gestures',
+      '03:00 PM - Building Low-Latency Multi-User WebXR Spaces with Three.js & WebGPU',
+      '04:30 PM - Showcase: 5 Selected Spatial Games & Medical Simulators',
+      '05:30 PM - Open Playtest Session'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-indie-mumbai-microsaas',
+    title: 'Mumbai Indie Hackers: Live Cash-Flow & Micro-SaaS Showcase',
+    tagline: 'Bootstrapped founders dissecting real MRR dashboards, programmatic SEO, and churn defense',
+    description: 'No pitch decks allowed. Strictly authentic bootstrapped founders showcasing their live Stripe dashboards, customer acquisition channels, and pricing tests for micro-SaaS and developer tools.',
+    mode: 'offline',
+    eventType: 'meetup',
+    vibe: 'casual-coffee',
+    categories: ['Indie Hacking & Micro-SaaS', 'Full-Stack & React'],
+    date: 'Sunday, Nov 29, 2026',
+    time: '3:30 PM – 7:00 PM IST',
+    isoDate: '2026-11-29T15:30:00+05:30',
+    city: 'mumbai',
+    area: 'Lower Parel',
+    venue: 'Dope Coffee Roasters, Kamala Mills, Lower Parel, Mumbai',
+    venueUrl: 'https://maps.google.com/?q=Kamala+Mills+Lower+Parel+Mumbai',
+    rsvpUrl: 'https://lu.ma/mumbai-indie-hackers-showcase',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'indie-hackers-mumbai',
+      name: 'Indie Hackers & Micro-SaaS Mumbai',
+      avatar: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets 2nd Saturday monthly',
+      memberCount: 4200
+    },
+    seats: { total: 75, filled: 62 },
+    speakers: [
+      { name: 'Prashant Goyal', role: 'Bootstrapped Founder ($22k MRR)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Simran Bakshi', role: 'Indie Creator & AI Tool Builder', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '03:30 PM - Specialty Coffee & Introductions',
+      '04:00 PM - Live MRR Teardown: How I Grew an Invoicing SaaS to $20k/mo with Zero Ads',
+      '05:00 PM - Rapid-Fire Lightning Demos (4 mins per indie builder)',
+      '06:15 PM - Pricing Optimization & Customer Retention Mastermind'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-ondc-delhi-dpi',
+    title: 'ONDC & Beckn Protocol Integration Masterclass: Open Commerce',
+    tagline: 'Deep dive into Beckn protocol contracts, Ed25519 signing, and building Buyer/Seller apps',
+    description: 'Technical implementation sprint for engineering teams integrating with Open Network for Digital Commerce (ONDC). Covers schema validation, search/on_search protocol lifecycles, and transaction settling.',
+    mode: 'offline',
+    eventType: 'workshop',
+    vibe: 'deep-tech',
+    categories: ['Digital Public Infrastructure (DPI & ONDC)', 'Finance / FinTech'],
+    date: 'Saturday, Dec 05, 2026',
+    time: '10:00 AM – 3:30 PM IST',
+    isoDate: '2026-12-05T10:00:00+05:30',
+    city: 'delhi-ncr',
+    area: 'Sector 62, Noida',
+    venue: 'Awfis Space Solutions, Plot No. A-42/6, Sector 62, Noida',
+    venueUrl: 'https://maps.google.com/?q=Awfis+Sector+62+Noida',
+    rsvpUrl: 'https://lu.ma/delhi-ondc-beckn-masterclass',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'dpi-ondc-collective',
+      name: 'India DPI & ONDC Open Guild',
+      avatar: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets 3rd Friday monthly',
+      memberCount: 6800
+    },
+    seats: { total: 120, filled: 94 },
+    speakers: [
+      { name: 'Anurag Verma', role: 'Protocol Architect @ Beckn Foundation', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Deepika Sen', role: 'FinTech Integrations Lead', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '10:00 AM - Architecture Overview of India’s DPI Stack (UPI, AA, ONDC)',
+      '11:00 AM - Live Code: Building an ONDC Buyer App Gateway with TypeScript',
+      '12:30 PM - Handling Beckn Asynchronous Callbacks and SLA Timeouts',
+      '01:30 PM - Working Lunch & Sandbox Testing',
+      '02:30 PM - Production Certification Walkthrough'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-legaltech-delhi-compliance',
+    title: 'AI Governance & LegalTech Automation Round-Table',
+    tagline: 'DPDP Act compliance, synthetic data liabilities, and autonomous contract generation in India',
+    description: 'Attorneys, enterprise compliance officers, and LegalTech founders discuss the enforcement of the Digital Personal Data Protection (DPDP) Act, generative AI IP indemnification, and automated legal clause redlining.',
+    mode: 'both',
+    eventType: 'meetup',
+    vibe: 'career-pitching',
+    categories: ['LegalTech & AI Compliance', 'AI / ML'],
+    date: 'Wednesday, Dec 09, 2026',
+    time: '5:30 PM – 8:30 PM IST',
+    isoDate: '2026-12-09T17:30:00+05:30',
+    city: 'delhi-ncr',
+    area: 'South Extension, New Delhi',
+    venue: 'Claridges Hall, South Extension & Online Zoom',
+    venueUrl: 'https://maps.google.com/?q=The+Claridges+New+Delhi',
+    virtualPlatform: 'Zoom Meeting',
+    rsvpUrl: 'https://lu.ma/delhi-legaltech-compliance-2026',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'delhi-quant-finance',
+      name: 'Quant & Algorithmic Trading Society (Delhi NCR)',
+      avatar: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Meets every other Thursday',
+      memberCount: 5200
+    },
+    seats: { total: 85, filled: 66 },
+    speakers: [
+      { name: 'Advocate Raghavendra Rao', role: 'Partner @ CyberLaw Practice', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
+      { name: 'Natasha Bose', role: 'Chief Compliance Officer @ FinSaaS', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '05:30 PM - High Tea & Executive Introductions',
+      '06:15 PM - DPDP Act 2026: Consent Managers & Cross-Border Data Transfer Rules',
+      '07:15 PM - Live Demo: AI Contract Redlining with Verifiable Citation Anchors',
+      '08:00 PM - Q&A with Legal Practitioners'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=800&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'event-hacker-blr-unconference',
+    title: 'Indiranagar Hacker House Unconference & Midnight Demos',
+    tagline: 'Spontaneous unconference sessions, midnight demo hour, rooftop chai, and zero PowerPoint',
+    description: 'An unstructured, authentic gathering of software craftsmen, open-source maintainers, and hardware tinkerers. The agenda is built live on a whiteboard at 6:00 PM. Anyone with code can claim a 10-minute demo slot.',
+    mode: 'offline',
+    eventType: 'meetup',
+    vibe: 'hands-on',
+    categories: ['Hacker Socials & Unconferences', 'Full-Stack & React'],
+    date: 'Friday, Dec 11, 2026',
+    time: '6:00 PM – 11:30 PM IST',
+    isoDate: '2026-12-11T18:00:00+05:30',
+    city: 'bengaluru',
+    area: 'Indiranagar',
+    venue: 'Hacker House Villa, 100ft Road, Indiranagar, Bengaluru',
+    rsvpUrl: 'https://lu.ma/blr-unconference-midnight-demos',
+    sourcePlatform: 'Luma',
+    price: 'Free',
+    isNew: true,
+    organizer: {
+      id: 'grabchai-community',
+      name: 'GrabChai Community',
+      avatar: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=150&auto=format&fit=crop&q=80',
+      verified: true,
+      cadenceBadge: 'Weekly Ritual (Every Sunday morning 8:30 AM)',
+      memberCount: 18200
+    },
+    seats: { total: 95, filled: 88 },
+    speakers: [
+      { name: 'Community Open Floor', role: 'Whiteboard voting at 6:00 PM', avatar: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=100&auto=format&fit=crop&q=80' }
+    ],
+    agenda: [
+      '06:00 PM - Whiteboard Agenda Creation & Samosa/Chai Social',
+      '07:00 PM - Unconference Tracks (3 Rooms: Systems, AI/Agents, UI/Creative)',
+      '09:00 PM - Midnight Demo Hour: 5-minute raw screen-shares of shipped products',
+      '10:30 PM - Rooftop Music & Casual Mingling'
+    ],
+    bannerUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80'
   }
 ];

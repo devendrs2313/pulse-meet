@@ -4,10 +4,13 @@ import { UserProfile } from '../types/auth';
 import { EVENTS_DATA, COMMUNITIES_DATA, CITIES } from '../data/mockData';
 import { isSupabaseConfigured, fetchLiveEvents, fetchSyncStatus, SyncStatus, normalizeCity } from '../lib/supabase';
 import { getCurrentUser } from '../lib/auth';
+import { isEventRemoved, markEventAsRemoved } from '../lib/urlUtils';
+import { isEventStartedOrCompleted, filterActiveUpcomingEvents } from '../lib/dateUtils';
 
 interface AppContextType {
   activeTab: 'explore' | 'compass' | 'radar' | 'saved';
   setActiveTab: (tab: 'explore' | 'compass' | 'radar' | 'saved') => void;
+  removeEvent: (eventId: string, reason?: string) => void;
   selectedCity: string;
   setSelectedCity: (city: string) => void;
   selectedFormats: FormatType[];
@@ -66,9 +69,6 @@ interface AppContextType {
   setIsProfileModalOpen: (open: boolean) => void;
   isAdminModalOpen: boolean;
   setIsAdminModalOpen: (open: boolean) => void;
-  notificationModalTarget: { event?: EventItem; category?: string; city?: string } | null;
-  setNotificationModalTarget: (target: { event?: EventItem; category?: string; city?: string } | null) => void;
-  openNotificationModal: (target?: { event?: EventItem; category?: string; city?: string }) => void;
   isAIConciergeOpen: boolean;
   setIsAIConciergeOpen: (open: boolean) => void;
 }
@@ -160,12 +160,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
-  const [notificationModalTarget, setNotificationModalTarget] = useState<{ event?: EventItem; category?: string; city?: string } | null>(null);
   const [isAIConciergeOpen, setIsAIConciergeOpen] = useState<boolean>(false);
-
-  const openNotificationModal = useCallback((target?: { event?: EventItem; category?: string; city?: string }) => {
-    setNotificationModalTarget(target || {});
-  }, []);
 
 /**
  * Automatically tags events with isNew: true if they belong to the latest batch of added events,
@@ -199,17 +194,43 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
   });
 }
 
-  // Events state: populated with mockData + custom events, dynamically refreshed from Supabase if configured
+  // Events state: populated with mockData + custom events, filtering out any removed/takedown events and already started/completed events
   const [events, setEvents] = useState<EventItem[]>(() => {
     try {
       const rawCustom = localStorage.getItem('pulse_custom_events');
       if (rawCustom) {
         const customEvents: EventItem[] = JSON.parse(rawCustom);
-        return tagNewEvents([...customEvents, ...EVENTS_DATA]);
+        return filterActiveUpcomingEvents(tagNewEvents([...customEvents, ...EVENTS_DATA])).filter(e => !isEventRemoved(e.id, e.rsvpUrl));
       }
     } catch {}
-    return tagNewEvents(EVENTS_DATA);
+    return filterActiveUpcomingEvents(tagNewEvents(EVENTS_DATA)).filter(e => !isEventRemoved(e.id, e.rsvpUrl));
   });
+
+  // Automated sweep timer: runs every 30 seconds to immediately prune events that just started or completed
+  useEffect(() => {
+    const sweepTimer = setInterval(() => {
+      setEvents(prev => {
+        const activeOnly = filterActiveUpcomingEvents(prev);
+        if (activeOnly.length !== prev.length) {
+          return activeOnly;
+        }
+        return prev;
+      });
+    }, 30000);
+
+    return () => clearInterval(sweepTimer);
+  }, []);
+
+  const removeEvent = useCallback((eventId: string, reason?: string) => {
+    setEvents(prev => {
+      const target = prev.find(e => e.id === eventId);
+      markEventAsRemoved(eventId, target?.rsvpUrl, reason);
+      return prev.filter(e => e.id !== eventId);
+    });
+    setActiveEventDetail(curr => (curr && curr.id === eventId ? null : curr));
+    setNotifyToast(`🗑️ Event removed: ${reason || 'Delisted from host platform'}`);
+  }, []);
+
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     lastSyncedAt: null,
     status: isSupabaseConfigured() ? 'active' : 'local_fallback',
@@ -267,7 +288,8 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
             }
           });
 
-          return tagNewEvents(allMerged);
+          const activeOnly = filterActiveUpcomingEvents(allMerged.filter(e => !isEventRemoved(e.id, e.rsvpUrl)));
+          return tagNewEvents(activeOnly);
         });
       }
       const status = await fetchSyncStatus();
@@ -281,18 +303,31 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
     refreshLiveEvents();
   }, [refreshLiveEvents]);
 
-  // Saved events persistence (clean initial state: 0 saved)
+  // Saved events persistence (clean initial state: strictly 0 saved by default)
   const [savedEventIds, setSavedEventIds] = useState<string[]>(() => {
     try {
+      const legacySeedIds = ['event-blr-01', 'event-blr-04', 'event-blr-02', 'event-blr-03', 'event-delhi-01', 'event-blr-fintech-01'];
+      const isCleaned = localStorage.getItem('pulse_saved_cleaned_v2');
       const stored = localStorage.getItem('pulse_saved_events');
+
+      if (!isCleaned) {
+        localStorage.setItem('pulse_saved_cleaned_v2', 'true');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            const nonLegacy = parsed.filter((id: string) => !legacySeedIds.includes(id));
+            localStorage.setItem('pulse_saved_events', JSON.stringify(nonLegacy));
+            return nonLegacy;
+          }
+        }
+        localStorage.setItem('pulse_saved_events', JSON.stringify([]));
+        return [];
+      }
+
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          // If stored is the legacy mock default ['event-blr-01', 'event-blr-04'], ignore it and start clean
-          const isLegacyMock = parsed.length === 2 && parsed.includes('event-blr-01') && parsed.includes('event-blr-04');
-          if (!isLegacyMock) {
-            return parsed;
-          }
+          return parsed.filter((id: string) => !legacySeedIds.includes(id));
         }
       }
       return [];
@@ -329,6 +364,17 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
       return [];
     }
   });
+
+  // Prune any saved event IDs that no longer exist in the active catalog or have been delisted
+  useEffect(() => {
+    if (events.length > 0 && savedEventIds.length > 0) {
+      const activeIds = new Set(events.map(e => e.id));
+      const validSaved = savedEventIds.filter(id => activeIds.has(id));
+      if (validSaved.length !== savedEventIds.length) {
+        setSavedEventIds(validSaved);
+      }
+    }
+  }, [events, savedEventIds]);
 
   useEffect(() => {
     localStorage.setItem('pulse_saved_events', JSON.stringify(savedEventIds));
@@ -407,6 +453,11 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
   // Dynamic filter logic: STRICTLY checks REGION/CITY + FORMAT (In-Person / Virtual with Hybrid in both) + CATEGORY + SEARCH
   const filteredEvents = events
     .filter(event => {
+      // 0. Temporal check: filter out events that have already started, ended, or closed registration
+      if (isEventStartedOrCompleted(event)) {
+        return false;
+      }
+
       // 1. Strict City / Region matching:
       // When a specific regional hub is selected (e.g. Delhi NCR, Bengaluru), ONLY show events from that city.
       if (selectedCity !== 'remote') {
@@ -453,33 +504,35 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
         const queries = Array.from(new Set([rawQ, cleanQ])).filter(q => q.length > 0);
 
         const matchFound = queries.some(q => {
-          const matchTitle = event.title.toLowerCase().includes(q);
-          const matchTagline = event.tagline?.toLowerCase().includes(q);
-          const matchDesc = event.description.toLowerCase().includes(q);
-          const matchOrgName = event.organizer.name.toLowerCase().includes(q);
-          const matchOrgId = event.organizer.id.toLowerCase().includes(q);
-          const matchTags = event.categories.some(t => t.toLowerCase().includes(q));
-          const matchArea = event.area?.toLowerCase().includes(q);
-          const matchVenue = event.venue?.toLowerCase().includes(q);
-          const matchSource = event.sourcePlatform?.toLowerCase().includes(q);
-          const matchUrl = event.rsvpUrl?.toLowerCase().includes(q);
-          const matchSpeakers = event.speakers?.some(s => s.name.toLowerCase().includes(q) || s.role.toLowerCase().includes(q));
+          const matchTitle = event.title?.toLowerCase().includes(q) || false;
+          const matchTagline = event.tagline?.toLowerCase().includes(q) || false;
+          const matchDesc = event.description?.toLowerCase().includes(q) || false;
+          const orgName = typeof event.organizer === 'object' && event.organizer?.name ? event.organizer.name : (typeof event.organizer === 'string' ? event.organizer : '');
+          const orgId = typeof event.organizer === 'object' && event.organizer?.id ? event.organizer.id : '';
+          const matchOrgName = orgName.toLowerCase().includes(q);
+          const matchOrgId = orgId.toLowerCase().includes(q);
+          const matchTags = Array.isArray(event.categories) && event.categories.some(t => typeof t === 'string' && t.toLowerCase().includes(q));
+          const matchArea = event.area?.toLowerCase().includes(q) || false;
+          const matchVenue = event.venue?.toLowerCase().includes(q) || false;
+          const matchSource = event.sourcePlatform?.toLowerCase().includes(q) || false;
+          const matchUrl = event.rsvpUrl?.toLowerCase().includes(q) || false;
+          const matchSpeakers = event.speakers?.some(s => s.name?.toLowerCase().includes(q) || s.role?.toLowerCase().includes(q)) || false;
 
           // Alias matchers:
           const isTpfQuery = q.includes('product folk') || q.includes('tpf');
-          const isTpfEvent = event.organizer.id.includes('the-product-folks') || event.organizer.id.includes('tpf') || event.organizer.name.toLowerCase().includes('product folk') || event.title.toLowerCase().includes('tpf');
+          const isTpfEvent = orgId.includes('the-product-folks') || orgId.includes('tpf') || orgName.toLowerCase().includes('product folk') || event.title?.toLowerCase().includes('tpf');
           if (isTpfQuery && isTpfEvent) return true;
 
           const isGdgQuery = q.includes('gdg') || q.includes('google developer');
-          const isGdgEvent = event.organizer.id.includes('gdg') || event.organizer.name.toLowerCase().includes('gdg') || event.organizer.name.toLowerCase().includes('google developer');
+          const isGdgEvent = orgId.includes('gdg') || orgName.toLowerCase().includes('gdg') || orgName.toLowerCase().includes('google developer');
           if (isGdgQuery && isGdgEvent) return true;
 
           const isGrafanaQuery = q.includes('grafana');
-          const isGrafanaEvent = event.organizer.id.includes('grafana') || event.organizer.name.toLowerCase().includes('grafana') || event.title.toLowerCase().includes('grafana');
+          const isGrafanaEvent = orgId.includes('grafana') || orgName.toLowerCase().includes('grafana') || event.title?.toLowerCase().includes('grafana');
           if (isGrafanaQuery && isGrafanaEvent) return true;
 
           const isAtlassianQuery = q.includes('atlassian') || q.includes('ace');
-          const isAtlassianEvent = event.organizer.id.includes('atlassian') || event.organizer.name.toLowerCase().includes('atlassian');
+          const isAtlassianEvent = orgId.includes('atlassian') || orgName.toLowerCase().includes('atlassian');
           if (isAtlassianQuery && isAtlassianEvent) return true;
 
           return matchTitle || matchTagline || matchDesc || matchOrgName || matchOrgId || matchTags || matchArea || matchVenue || matchSource || matchUrl || matchSpeakers;
@@ -498,7 +551,7 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
   // Dynamically derive available categories ONLY from events present in the active regional hub
   const availableCategories = useMemo(() => {
     const regionalEvents = events.filter(e => 
-      selectedCity === 'remote' ? true : normalizeCity(e.city) === normalizeCity(selectedCity)
+      !isEventStartedOrCompleted(e) && (selectedCity === 'remote' ? true : normalizeCity(e.city) === normalizeCity(selectedCity))
     );
 
     const categorySet = new Set<string>();
@@ -530,33 +583,38 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
   );
 
   const addToGoogleCalendar = (event: EventItem) => {
-    const title = encodeURIComponent(event.title);
-    const details = encodeURIComponent(`${event.tagline}\n\nOrganizer: ${event.organizer.name}\nRSVP: ${event.rsvpUrl}`);
-    const location = encodeURIComponent(event.venue || event.virtualPlatform || event.city);
+    const orgName = typeof event.organizer === 'object' && event.organizer?.name ? event.organizer.name : (typeof event.organizer === 'string' ? event.organizer : 'Community Host');
+    const title = encodeURIComponent(event.title || 'Tech Event');
+    const details = encodeURIComponent(`${event.tagline || ''}\n\nOrganizer: ${orgName}\nRSVP: ${event.rsvpUrl || ''}`);
+    const location = encodeURIComponent(event.venue || event.virtualPlatform || event.city || 'TBA');
     
-    const startIso = new Date(event.isoDate).toISOString().replace(/-|:|\.\d\d\d/g, '');
-    const endIso = new Date(new Date(event.isoDate).getTime() + 3 * 3600 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const parsedDate = event.isoDate ? new Date(event.isoDate) : new Date();
+    const validDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+    const startIso = validDate.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const endIso = new Date(validDate.getTime() + 3 * 3600 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, '');
     
     const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${startIso}/${endIso}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const downloadIcsFile = (event: EventItem) => {
-    const startDate = new Date(event.isoDate).toISOString().replace(/-|:|\.\d\d\d/g, '');
-    const endDate = new Date(new Date(event.isoDate).getTime() + 3 * 3600 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const parsedDate = event.isoDate ? new Date(event.isoDate) : new Date();
+    const validDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+    const startDate = validDate.toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const endDate = new Date(validDate.getTime() + 3 * 3600 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, '');
     
     const icsContent = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'PRODID:-//PulseMeet//Tech Events Radar//EN',
       'BEGIN:VEVENT',
-      `UID:${event.id}@pulsemeet.dev`,
+      `UID:${event.id || Date.now()}@pulsemeet.dev`,
       `DTSTAMP:${startDate}`,
       `DTSTART:${startDate}`,
       `DTEND:${endDate}`,
-      `SUMMARY:${event.title}`,
-      `DESCRIPTION:${event.tagline} - RSVP at ${event.rsvpUrl}`,
-      `LOCATION:${event.venue || event.virtualPlatform || event.city}`,
+      `SUMMARY:${event.title || 'Tech Event'}`,
+      `DESCRIPTION:${event.tagline || ''} - RSVP at ${event.rsvpUrl || ''}`,
+      `LOCATION:${event.venue || event.virtualPlatform || event.city || 'TBA'}`,
       'STATUS:CONFIRMED',
       'END:VEVENT',
       'END:VCALENDAR'
@@ -576,6 +634,7 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
       value={{
         activeTab,
         setActiveTab,
+        removeEvent,
         selectedCity,
         setSelectedCity,
         selectedFormats,
@@ -634,9 +693,6 @@ function tagNewEvents(list: EventItem[]): EventItem[] {
         setIsProfileModalOpen,
         isAdminModalOpen,
         setIsAdminModalOpen,
-        notificationModalTarget,
-        setNotificationModalTarget,
-        openNotificationModal,
         isAIConciergeOpen,
         setIsAIConciergeOpen,
       }}

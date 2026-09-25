@@ -1,34 +1,35 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
 import { EventCard } from '../discovery/EventCard';
 import { Bookmark, Compass } from 'lucide-react';
-import { EVENTS_DATA } from '../../data/mockData';
 
 export const SavedEventsView: React.FC = () => {
-  const { savedEventIds, setActiveTab } = useApp();
+  const { events, savedEventIds, setActiveTab } = useApp();
 
-  const savedEvents = EVENTS_DATA.filter(e => savedEventIds.includes(e.id));
+  const savedEvents = useMemo(() => {
+    return events.filter(e => savedEventIds.includes(e.id));
+  }, [events, savedEventIds]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8">
+    <div className="max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
       
       {/* Header */}
-      <div className="max-w-3xl mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-3 border border-indigo-200/60">
+      <div className="max-w-3xl mb-6 sm:mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-2 sm:mb-3 border border-indigo-200/60 shadow-2xs">
           <Bookmark className="w-3.5 h-3.5" />
           <span>Your Curated Itinerary</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900 leading-tight">
           Saved Events & RSVPs {savedEvents.length > 0 ? `(${savedEvents.length})` : ''}
         </h1>
-        <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
+        <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-zinc-600 leading-relaxed">
           Keep track of upcoming bootcamps, community meetups, and hackathons you plan to attend. 1-click sync them with your calendar.
         </p>
       </div>
 
       {/* Events Grid or Empty State */}
       {savedEvents.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {savedEvents.map(event => (
             <EventCard key={event.id} event={event} />
           ))}

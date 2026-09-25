@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { EventItem } from '../../types/event';
 import { TimelineEventCard } from './TimelineEventCard';
+import { filterActiveUpcomingEvents } from '../../lib/dateUtils';
 
 interface TimelineViewProps {
   events: EventItem[];
@@ -14,11 +15,12 @@ interface TimelineDateGroup {
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ events }) => {
-  // Group events by day key
+  // Group active events by day key
   const groupedDates = useMemo<TimelineDateGroup[]>(() => {
+    const activeEvents = filterActiveUpcomingEvents(events);
     const map = new Map<string, { dayMonth: string; weekday: string; events: EventItem[] }>();
 
-    events.forEach((event) => {
+    activeEvents.forEach((event) => {
       let key = 'undated';
       let dayMonth = 'Upcoming';
       let weekday = '';
@@ -74,42 +76,59 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events }) => {
   }
 
   return (
-    <div className="relative pl-4 sm:pl-8 py-2">
-      {/* Vertical Spine Line running all the way down */}
-      <div 
-        className="absolute top-3 bottom-6 left-[7px] sm:left-[15px] w-0.5 bg-zinc-200/90" 
-        aria-hidden="true"
-      />
+    <div className="relative pl-5 sm:pl-7 border-l-2 border-dotted border-zinc-200/90 ml-2 sm:ml-3 py-1 space-y-7 sm:space-y-9">
+      {groupedDates.map((group) => {
+        let datePrefix = group.weekday;
+        let shortWeekday = group.weekday.slice(0, 3).toUpperCase();
+        if (group.key !== 'undated') {
+          const parts = group.key.split('-').map(Number);
+          if (parts.length === 3) {
+            const now = new Date();
+            const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const tom = new Date(now);
+            tom.setDate(tom.getDate() + 1);
+            const tomKey = `${tom.getFullYear()}-${String(tom.getMonth() + 1).padStart(2, '0')}-${String(tom.getDate()).padStart(2, '0')}`;
 
-      <div className="space-y-8">
-        {groupedDates.map((group) => (
+            if (group.key === todayKey) {
+              datePrefix = 'Today';
+            } else if (group.key === tomKey) {
+              datePrefix = 'Tomorrow';
+            }
+          }
+        }
+
+        return (
           <div key={group.key} className="relative">
-            {/* Timeline Node marker on the spine */}
+            {/* Hollow circular node on the dotted spine matching Lovable */}
             <div 
-              className="absolute -left-[15px] sm:-left-[23px] top-2.5 w-3 h-3 rounded-full bg-zinc-400 border-2 border-white ring-2 ring-zinc-200" 
-              aria-hidden="true"
+              className="absolute -left-[27px] sm:-left-[35px] top-1.5 w-3.5 h-3.5 rounded-full border-2 border-zinc-400 bg-[#FAFAFA]" 
+              aria-hidden="true" 
             />
 
-            {/* Date Pill Header */}
-            <div className="mb-3.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-zinc-200/90 shadow-2xs text-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
-                <span className="font-bold text-zinc-900">{group.dayMonth}</span>
-                {group.weekday && (
-                  <span className="text-zinc-500 font-medium">{group.weekday}</span>
-                )}
-              </div>
+            {/* Date Section Header: e.g. "Today FRI" */}
+            <div className="flex items-baseline gap-2 mb-3.5">
+              <h2 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+                {datePrefix}
+              </h2>
+              {shortWeekday && (
+                <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-400">
+                  {shortWeekday}
+                </span>
+              )}
+              <span className="ml-auto text-[11px] font-mono text-zinc-400">
+                {group.dayMonth}
+              </span>
             </div>
 
-            {/* Stack of Event Cards for this date */}
-            <div className="space-y-3.5">
+            {/* Stack of Precision Event Cards */}
+            <div className="space-y-3.5 sm:space-y-4">
               {group.events.map((event) => (
                 <TimelineEventCard key={event.id} event={event} />
               ))}
             </div>
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 };

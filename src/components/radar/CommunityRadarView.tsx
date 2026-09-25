@@ -127,10 +127,10 @@ export const CommunityRadarView: React.FC = () => {
   const cityName = selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1).replace('-', ' ');
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8">
+    <div className="max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
       
       {/* Hero Header: Clear Purpose & User Value */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-3 border border-indigo-200/60 shadow-2xs">
           <Sparkles className="w-3.5 h-3.5" />
           <span>RECURRING ORGANIZERS · EARLY-ACCESS RADAR</span>

@@ -11,11 +11,11 @@ import {
   ChevronDown,
   CalendarPlus,
   Share2,
-  Ticket,
   Check,
-  Bell,
   Sparkles
 } from 'lucide-react';
+
+import { isValidHttpUrl } from '../../lib/urlUtils';
 
 interface EventCardProps {
   event: EventItem;
@@ -27,17 +27,21 @@ export const EventCard: React.FC<EventCardProps> = ({ event, featured = false })
     isEventSaved, 
     toggleSaveEvent, 
     setActiveEventDetail, 
-    setBookingModalEvent,
     isEventBooked,
     addToGoogleCalendar, 
     downloadIcsFile,
-    setNotifyToast,
-    openNotificationModal
+    setNotifyToast
   } = useApp();
 
   const [isCalendarMenuOpen, setIsCalendarMenuOpen] = useState(false);
   const isSaved = isEventSaved(event.id);
   const isBooked = isEventBooked(event.id);
+  const hasValidUrl = isValidHttpUrl(event.rsvpUrl);
+
+  const orgName = (typeof event.organizer === 'object' && event.organizer?.name) ? event.organizer.name : (typeof event.organizer === 'string' ? event.organizer : 'Community Host');
+  const orgAvatar = (typeof event.organizer === 'object' && event.organizer?.avatar) ? event.organizer.avatar : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
+  const orgVerified = typeof event.organizer === 'object' ? Boolean(event.organizer?.verified) : false;
+  const orgCadence = (typeof event.organizer === 'object' && event.organizer?.cadenceBadge) ? event.organizer.cadenceBadge : 'Curated';
 
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -52,16 +56,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, featured = false })
       setNotifyToast('RSVP link copied to clipboard!');
       setTimeout(() => setNotifyToast(null), 2500);
     }
-  };
-
-  const handleBookClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setBookingModalEvent(event);
-  };
-
-  const handleDirectExternalClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    window.open(event.rsvpUrl, '_blank', 'noopener,noreferrer');
   };
 
   // Seat percentage calculation
@@ -171,12 +165,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, featured = false })
           <div className="flex items-center justify-between gap-2 mb-2.5">
             <div className="flex items-center gap-2 min-w-0">
               <img 
-                src={event.organizer.avatar} 
-                alt={event.organizer.name}
+                src={orgAvatar} 
+                alt={orgName}
                 className="w-5 h-5 rounded-full object-cover ring-1 ring-zinc-200"
               />
-              <span className="text-xs font-medium text-zinc-700 truncate">{event.organizer.name}</span>
-              {event.organizer.verified && (
+              <span className="text-xs font-medium text-zinc-700 truncate">{orgName}</span>
+              {orgVerified && (
                 <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
               )}
             </div>
@@ -190,7 +184,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, featured = false })
                 </span>
               )}
               <span className="text-[10px] text-zinc-500 font-mono bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200/60 truncate">
-                {event.organizer.cadenceBadge}
+                {orgCadence}
               </span>
             </div>
           </div>
@@ -301,41 +295,27 @@ export const EventCard: React.FC<EventCardProps> = ({ event, featured = false })
             >
               <Share2 className="w-3.5 h-3.5" />
             </button>
-
-            {/* Email Notification Alert Button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                openNotificationModal({ event });
-              }}
-              className="p-1.5 rounded-xl text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition-colors"
-              title="Get email notifications for this gathering"
-            >
-              <Bell className="w-3.5 h-3.5" />
-            </button>
           </div>
 
-          {/* Right: Primary Book/RSVP Button with guaranteed Link Modal */}
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleBookClick}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] ${
-                isBooked
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-              }`}
-            >
-              <Ticket className="w-3 h-3" />
-              <span>{isBooked ? 'View Pass' : 'Book / RSVP'}</span>
-            </button>
-
-            <button
-              onClick={handleDirectExternalClick}
-              className="p-1.5 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 transition-colors"
-              title={`Direct open ${event.rsvpUrl}`}
-            >
-              <ExternalLink className="w-3 h-3" />
-            </button>
+          {/* Right: Direct Visit / Book Button */}
+          <div>
+            {hasValidUrl ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveEventDetail(event);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-2xs hover:shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+                title="View event details & booking"
+              >
+                <span>Book ↗</span>
+              </button>
+            ) : (
+              <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-400">
+                Link Pending
+              </span>
+            )}
           </div>
 
         </div>

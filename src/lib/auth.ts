@@ -7,7 +7,7 @@ const STORAGE_USER_REGISTRY_KEY = 'pulse_user_registry';
 export const SUPER_ADMIN_EMAIL = 'devendrs2313@gmail.com';
 export const SUPER_ADMIN_PASSWORD = 'Lolyouhacked@69';
 
-// Default initial seeded users for Super Admin directory demonstration
+// Default initial seeded users - only the Super Admin account is kept
 const INITIAL_USERS: UserProfile[] = [
   {
     id: 'user_admin_01',
@@ -23,56 +23,11 @@ const INITIAL_USERS: UserProfile[] = [
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
     createdAt: '2026-09-18T10:00:00.000Z',
     lastActiveAt: new Date().toISOString()
-  },
-  {
-    id: 'user_seed_02',
-    name: 'Aarav Sharma',
-    email: 'aarav.sharma@techcorp.in',
-    role: 'Product Manager',
-    headline: 'Senior PM @ FinTech',
-    city: 'delhi-ncr',
-    formats: ['offline'],
-    categories: ['Product Management', 'Leadership', 'AI / ML'],
-    emailAlerts: true,
-    isAdmin: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-    createdAt: '2026-09-19T14:32:00.000Z',
-    lastActiveAt: '2026-09-20T18:12:00.000Z'
-  },
-  {
-    id: 'user_seed_03',
-    name: 'Priyanka Verma',
-    email: 'priyanka.v@cloudscale.io',
-    role: 'Software Engineer',
-    headline: 'Staff SRE & Kubernetes Contributor',
-    city: 'bengaluru',
-    formats: ['offline', 'online'],
-    categories: ['Cloud & DevOps', 'Rust & Systems', 'Engineering'],
-    emailAlerts: true,
-    isAdmin: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-    createdAt: '2026-09-19T16:45:00.000Z',
-    lastActiveAt: '2026-09-20T19:05:00.000Z'
-  },
-  {
-    id: 'user_seed_04',
-    name: 'Rohan Mehta',
-    email: 'rohan.mehta@buildfast.ai',
-    role: 'AI / ML Practitioner',
-    headline: 'Agentic AI Researcher',
-    city: 'delhi-ncr',
-    formats: ['offline'],
-    categories: ['AI / ML', 'Product Management', 'Open Source'],
-    emailAlerts: false,
-    isAdmin: false,
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-    createdAt: '2026-09-20T08:15:00.000Z',
-    lastActiveAt: '2026-09-20T21:40:00.000Z'
   }
 ];
 
 /**
- * Load user registry from local storage
+ * Load user registry from local storage (purges any legacy dummy seed users)
  */
 export function getRegisteredUsers(): UserProfile[] {
   try {
@@ -83,14 +38,22 @@ export function getRegisteredUsers(): UserProfile[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
+      // Clean out legacy demo seed users
+      const cleaned = parsed.filter(u => {
+        if (!u || !u.id || !u.email) return false;
+        if (u.id.startsWith('user_seed_')) return false;
+        const lower = u.email.toLowerCase();
+        if (lower === 'aarav.sharma@techcorp.in' || lower === 'priyanka.v@cloudscale.io' || lower === 'rohan.mehta@buildfast.ai') {
+          return false;
+        }
+        return true;
+      });
+
       // Ensure super admin always exists in registry
-      const hasAdmin = parsed.some(u => u.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase());
-      if (!hasAdmin) {
-        const merged = [INITIAL_USERS[0], ...parsed];
-        localStorage.setItem(STORAGE_USER_REGISTRY_KEY, JSON.stringify(merged));
-        return merged;
-      }
-      return parsed;
+      const hasAdmin = cleaned.some(u => u.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase());
+      const finalUsers = hasAdmin ? cleaned : [INITIAL_USERS[0], ...cleaned];
+      localStorage.setItem(STORAGE_USER_REGISTRY_KEY, JSON.stringify(finalUsers));
+      return finalUsers;
     }
     return INITIAL_USERS;
   } catch {
